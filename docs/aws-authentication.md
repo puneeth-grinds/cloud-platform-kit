@@ -35,3 +35,43 @@ When prompted:
 3. Use the `cloud-platform-kit` IAM username and its console password.
 4. Complete MFA verification.
 5. Confirm that the selected session belongs to the expected account and IAM user.
+
+## Configure Terraform access
+
+This only needs to be configured once:
+
+```bash
+aws configure set credential_process \
+  'aws configure export-credentials --profile cloud-platform-kit-login --format process' \
+  --profile cloud-platform-kit-personal
+```
+
+```bash
+aws configure set region us-west-1 \
+  --profile cloud-platform-kit-personal
+```
+
+## Verify the identity
+
+```bash
+aws sts get-caller-identity \
+  --profile cloud-platform-kit-personal
+```
+
+Confirm that the expected personal AWS account and the `cloud-platform-kit` IAM user are shown.
+
+## Run Terraform
+
+```bash
+AWS_PROFILE=cloud-platform-kit-personal terraform plan
+```
+
+Using `AWS_PROFILE` for each command prevents this project from affecting the AWS profiles used by other repositories.
+
+## Sign out
+
+```bash
+aws logout --profile cloud-platform-kit-login
+```
+
+Temporary credentials are cached locally by the AWS CLI and expire automatically. No credentials are stored in this repository.
