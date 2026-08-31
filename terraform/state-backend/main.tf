@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 # Create S3 bucket
 resource "aws_s3_bucket" "state_backend_tf" {
-  bucket = format("state_backend_tf", data.aws_caller_identity.current.account_id)
+  bucket = "${var.project}-tf-state-${(data.aws_caller_identity.current.account_id)}"
 
   lifecycle {
     prevent_destroy = true
