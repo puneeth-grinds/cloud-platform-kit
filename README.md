@@ -157,7 +157,7 @@ cloud-platform-kit/
   ```bash
   aws login --profile cloud-platform-kit-personal
   ```
-- Go 1.22+
+- Go 1.27
 - Terraform 1.10+
 - Podman
 - Trivy
