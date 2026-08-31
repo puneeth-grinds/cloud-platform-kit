@@ -111,7 +111,7 @@ response.
  
 ```
 cloud-platform-kit/
-├── infra/
+├── terraform/
 │   ├── bootstrap/          # S3 state bucket + native S3 locking (applied once)
 │   └── main/               # All project infrastructure (VPC, ECS, RDS, ALB, etc.)
 │       ├── main.tf
@@ -168,7 +168,7 @@ cloud-platform-kit/
 ### 1. Bootstrap remote state (one-time)
  
 ```bash
-cd infra/bootstrap
+cd terraform/bootstrap
 terraform init
 terraform apply
 ```
@@ -179,7 +179,7 @@ native S3 locking with `use_lockfile = true`.
 ### 2. Provision infrastructure
  
 ```bash
-cd infra/main
+cd terraform/main
 terraform init \
   -backend-config="bucket=<state-bucket-name>" \
   -backend-config="key=cloud-platform-kit/terraform.tfstate" \
@@ -216,7 +216,7 @@ podman push <account-id>.dkr.ecr.eu-west-1.amazonaws.com/vulnerability-scanner:l
  
 ```bash
 # Get ALB DNS name
-terraform -chdir=infra/main output alb_dns_name
+terraform -chdir=terraform/main output alb_dns_name
  
 # Hit the health endpoint
 curl https://<alb-dns-name>/health
@@ -225,7 +225,7 @@ curl https://<alb-dns-name>/health
 ### 5. Tear down when done
  
 ```bash
-cd infra/main
+cd terraform/main
 terraform destroy
 ```
  
