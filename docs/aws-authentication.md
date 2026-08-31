@@ -51,7 +51,7 @@ Configure the Terraform role profile:
 
 ```bash
 aws configure set role_arn \
-  arn:aws:iam::512297269123:role/cloud-platform-kit-terraform \
+  arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/cloud-platform-kit-terraform \
   --profile cloud-platform-kit-terraform
 ```
 

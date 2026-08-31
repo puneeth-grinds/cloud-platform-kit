@@ -120,8 +120,10 @@ cloud-platform-kit/
 - AWS CLI and an MFA-protected IAM user. Authenticate with browser-based temporary
   credentials; do not configure or store long-lived access keys:
   ```bash
-  aws login --profile cloud-platform-kit-personal
+  aws login --profile cloud-platform-kit-login
   ```
+- Follow [AWS authentication](docs/aws-authentication.md) for the one-time local
+  profile and Terraform role configuration.
 - Go 1.27
 - Terraform 1.10+
 - Podman
@@ -134,47 +136,47 @@ cloud-platform-kit/
  
 ```bash
 cd terraform/state-backend
-terraform init
-terraform apply
+AWS_PROFILE=cloud-platform-kit-terraform terraform init
+AWS_PROFILE=cloud-platform-kit-terraform terraform plan
 ```
- 
-Note the S3 bucket name from the output. The main configuration uses Terraform's
-native S3 locking with `use_lockfile = true`.
+
+The backend is already bootstrapped and uses native S3 locking with
+`use_lockfile = true`. See [Terraform state backend](docs/terraform-state-backend.md).
  
 ### 2. Provision infrastructure
  
 ```bash
 cd terraform/main
-terraform init \
+AWS_PROFILE=cloud-platform-kit-terraform terraform init \
   -backend-config="bucket=<state-bucket-name>" \
   -backend-config="key=cloud-platform-kit/terraform.tfstate" \
   -backend-config="region=us-west-1" \
   -backend-config="use_lockfile=true"
  
-terraform plan
-terraform apply
+AWS_PROFILE=cloud-platform-kit-terraform terraform plan
+AWS_PROFILE=cloud-platform-kit-terraform terraform apply
 ```
  
 ### 3. Build and push images manually (first time)
  
 ```bash
 # Authenticate Podman to ECR
-aws ecr get-login-password --region eu-west-1 \
-  --profile cloud-platform-kit-personal | \
+aws ecr get-login-password --region us-west-1 \
+  --profile cloud-platform-kit-terraform | \
   podman login --username AWS --password-stdin \
-  <account-id>.dkr.ecr.eu-west-1.amazonaws.com
+  <account-id>.dkr.ecr.us-west-1.amazonaws.com
 
 # api-gateway
 podman build -t cloud-platform-kit/api-gateway ./services/api-gateway
 podman tag cloud-platform-kit/api-gateway:latest \
-  <account-id>.dkr.ecr.eu-west-1.amazonaws.com/api-gateway:latest
-podman push <account-id>.dkr.ecr.eu-west-1.amazonaws.com/api-gateway:latest
+  <account-id>.dkr.ecr.us-west-1.amazonaws.com/api-gateway:latest
+podman push <account-id>.dkr.ecr.us-west-1.amazonaws.com/api-gateway:latest
 
 # vulnerability-scanner
 podman build -t cloud-platform-kit/vulnerability-scanner ./services/vulnerability-scanner
 podman tag cloud-platform-kit/vulnerability-scanner:latest \
-  <account-id>.dkr.ecr.eu-west-1.amazonaws.com/vulnerability-scanner:latest
-podman push <account-id>.dkr.ecr.eu-west-1.amazonaws.com/vulnerability-scanner:latest
+  <account-id>.dkr.ecr.us-west-1.amazonaws.com/vulnerability-scanner:latest
+podman push <account-id>.dkr.ecr.us-west-1.amazonaws.com/vulnerability-scanner:latest
 ```
  
 ### 4. Verify the stack
