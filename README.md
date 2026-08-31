@@ -183,7 +183,7 @@ cd terraform/main
 terraform init \
   -backend-config="bucket=<state-bucket-name>" \
   -backend-config="key=cloud-platform-kit/terraform.tfstate" \
-  -backend-config="region=eu-west-1" \
+  -backend-config="region=us-west-1" \
   -backend-config="use_lockfile=true"
  
 terraform plan
