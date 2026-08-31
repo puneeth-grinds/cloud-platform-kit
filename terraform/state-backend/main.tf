@@ -41,7 +41,7 @@ resource "aws_s3_bucket_public_access_block" "state_backend_tf_public_block" {
   restrict_public_buckets = true
 
 }
-
+# Backend state to S3
 terraform {
   backend "s3" {
     bucket       = "cloud-platform-kit-tf-state-512297269123"
