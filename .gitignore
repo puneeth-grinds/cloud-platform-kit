@@ -1,0 +1,26 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.*
+*.tfvars
+!*.tfvars.example
+
+# Environment files
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+
+# Go build and test output
+bin/
+*.exe
+*.test
+*.out
+coverage.*
+
+# macOS
+.DS_Store

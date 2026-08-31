@@ -16,50 +16,15 @@ The platform does real useful work: it accepts HTTP requests, routes them throug
 API gateway, and runs Trivy vulnerability scans against Docker images, persisting
 results to Postgres.
  
-This is not a tutorial follow-along. Every architectural decision — single-AZ to
-control cost, ECS-native deploys over ArgoCD, Grafana Cloud over self-hosted Grafana
-— is a deliberate trade-off documented here.
+This is not a tutorial follow-along. Every architectural decision — Single-AZ RDS
+and one NAT Gateway to control cost, ECS-native deploys over ArgoCD, Grafana Cloud
+over self-hosted Grafana — is a deliberate trade-off documented here.
  
 ---
  
 ## Architecture
  
-```
-Internet / user
-      │
-      ▼
-┌─────────────────────────────────────────────────────┐
-│  AWS VPC                          Terraform-managed  │
-│                                                      │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  Public subnet                              │    │
-│  │  ┌───────────────────────────────────────┐  │    │
-│  │  │  ALB  (Application Load Balancer)     │  │    │
-│  │  └───────────────────────────────────────┘  │    │
-│  └─────────────────────────────────────────────┘    │
-│                       │                             │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  Private subnet  ·  ECS Fargate             │    │
-│  │  ┌──────────────┐    ┌──────────────────┐   │    │
-│  │  │ api-gateway  │───▶│vulnerability-    │   │    │
-│  │  │              │    │scanner           │   │    │
-│  │  └──────┬───────┘    └────────┬─────────┘   │    │
-│  │         │                    │              │    │
-│  │  ┌──────▼───────┐    ┌───────▼──────────┐   │    │
-│  │  │ RDS Postgres │    │ S3               │   │    │
-│  │  └──────────────┘    └──────────────────┘   │    │
-│  └─────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────┘
-      │                                    │
-      │  GitHub Actions                    │ OTel traces
-      │  build → push → deploy             ▼
-      │  ┌─────────────────┐    ┌──────────────────────┐
-      └─▶│ ECR             │    │ Grafana Cloud         │
-         │ Container images│    │ Dashboards · Alerts   │
-         └─────────────────┘    └──────────────────────┘
-```
- 
----
+![alt text](./assets/architecture.png)
  
 ## Services
  
@@ -92,9 +57,9 @@ response.
  
 | Layer | Technology |
 |---|---|
-| Language | Go 1.22 |
-| Infrastructure as Code | Terraform 1.7+ |
-| Container runtime | Docker |
+| Language | Go 1.27 |
+| Infrastructure as Code | Terraform 1.10+ |
+| Local container runtime | Podman |
 | Compute | AWS ECS Fargate |
 | Container registry | AWS ECR |
 | Network | AWS VPC, ALB |
@@ -111,8 +76,8 @@ response.
  
 ```
 cloud-platform-kit/
-├── infra/
-│   ├── bootstrap/          # S3 state bucket + DynamoDB lock table (applied once)
+├── terraform/
+│   ├── bootstrap/          # S3 state bucket + native S3 locking (applied once)
 │   └── main/               # All project infrastructure (VPC, ECS, RDS, ALB, etc.)
 │       ├── main.tf
 │       ├── variables.tf
@@ -152,10 +117,16 @@ cloud-platform-kit/
  
 ## Prerequisites
  
-- AWS account with programmatic access configured (`aws configure`)
-- Go 1.22+
-- Terraform 1.7+
-- Docker Desktop
+- AWS CLI and an MFA-protected IAM user. Authenticate with browser-based temporary
+  credentials; do not configure or store long-lived access keys:
+  ```bash
+  aws login --profile cloud-platform-kit-login
+  ```
+- Follow [AWS authentication](docs/aws-authentication.md) for the one-time local
+  profile and Terraform role configuration.
+- Go 1.27
+- Terraform 1.10+
+- Podman
 - Trivy
 ---
  
@@ -164,54 +135,55 @@ cloud-platform-kit/
 ### 1. Bootstrap remote state (one-time)
  
 ```bash
-cd infra/bootstrap
-terraform init
-terraform apply
+cd terraform/state-backend
+AWS_PROFILE=cloud-platform-kit-terraform terraform init
+AWS_PROFILE=cloud-platform-kit-terraform terraform plan
 ```
- 
-Note the output values — you will need the S3 bucket name and DynamoDB table name
-for all subsequent Terraform commands.
+
+The backend is already bootstrapped and uses native S3 locking with
+`use_lockfile = true`. See [Terraform state backend](docs/terraform-state-backend.md).
  
 ### 2. Provision infrastructure
  
 ```bash
-cd infra/main
-terraform init \
+cd terraform/main
+AWS_PROFILE=cloud-platform-kit-terraform terraform init \
   -backend-config="bucket=<state-bucket-name>" \
   -backend-config="key=cloud-platform-kit/terraform.tfstate" \
-  -backend-config="region=eu-west-1" \
-  -backend-config="dynamodb_table=cloud-platform-kit-tf-locks"
+  -backend-config="region=us-west-1" \
+  -backend-config="use_lockfile=true"
  
-terraform plan
-terraform apply
+AWS_PROFILE=cloud-platform-kit-terraform terraform plan
+AWS_PROFILE=cloud-platform-kit-terraform terraform apply
 ```
  
 ### 3. Build and push images manually (first time)
  
 ```bash
-# Authenticate Docker to ECR
-aws ecr get-login-password --region eu-west-1 | \
-  docker login --username AWS --password-stdin \
-  <account-id>.dkr.ecr.eu-west-1.amazonaws.com
- 
+# Authenticate Podman to ECR
+aws ecr get-login-password --region us-west-1 \
+  --profile cloud-platform-kit-terraform | \
+  podman login --username AWS --password-stdin \
+  <account-id>.dkr.ecr.us-west-1.amazonaws.com
+
 # api-gateway
-docker build -t cloud-platform-kit/api-gateway ./services/api-gateway
-docker tag cloud-platform-kit/api-gateway:latest \
-  <account-id>.dkr.ecr.eu-west-1.amazonaws.com/api-gateway:latest
-docker push <account-id>.dkr.ecr.eu-west-1.amazonaws.com/api-gateway:latest
- 
+podman build -t cloud-platform-kit/api-gateway ./services/api-gateway
+podman tag cloud-platform-kit/api-gateway:latest \
+  <account-id>.dkr.ecr.us-west-1.amazonaws.com/api-gateway:latest
+podman push <account-id>.dkr.ecr.us-west-1.amazonaws.com/api-gateway:latest
+
 # vulnerability-scanner
-docker build -t cloud-platform-kit/vulnerability-scanner ./services/vulnerability-scanner
-docker tag cloud-platform-kit/vulnerability-scanner:latest \
-  <account-id>.dkr.ecr.eu-west-1.amazonaws.com/vulnerability-scanner:latest
-docker push <account-id>.dkr.ecr.eu-west-1.amazonaws.com/vulnerability-scanner:latest
+podman build -t cloud-platform-kit/vulnerability-scanner ./services/vulnerability-scanner
+podman tag cloud-platform-kit/vulnerability-scanner:latest \
+  <account-id>.dkr.ecr.us-west-1.amazonaws.com/vulnerability-scanner:latest
+podman push <account-id>.dkr.ecr.us-west-1.amazonaws.com/vulnerability-scanner:latest
 ```
  
 ### 4. Verify the stack
  
 ```bash
 # Get ALB DNS name
-terraform -chdir=infra/main output alb_dns_name
+terraform -chdir=terraform/main output alb_dns_name
  
 # Hit the health endpoint
 curl https://<alb-dns-name>/health
@@ -220,7 +192,7 @@ curl https://<alb-dns-name>/health
 ### 5. Tear down when done
  
 ```bash
-cd infra/main
+cd terraform/main
 terraform destroy
 ```
  
@@ -259,9 +231,10 @@ and logs are exported via OTLP to Grafana Cloud (free tier).
  
 ## Design decisions
  
-**Single-AZ** — RDS and ECS run in one availability zone to eliminate NAT Gateway
-and data transfer costs during development. A production deployment would span
-two AZs minimum.
+**Cost-aware development topology** — The ALB spans two Availability Zones while
+RDS remains Single-AZ. Private ECS tasks use one NAT Gateway for outbound internet
+access; ECR and S3 endpoints bypass the NAT Gateway for AWS-service traffic. The
+`apply → test → destroy` workflow controls cost between development sessions.
  
 **ECS-native CI/CD over ArgoCD** — ArgoCD requires Kubernetes. Rather than running
 k3s on a free-tier EC2 to get GitOps, GitHub Actions directly updates ECS task
@@ -290,19 +263,14 @@ pillar:security
 pillar:docs
  
 stage:0-bootstrap
-stage:1-network
-stage:2-security-groups
-stage:3-ecr
-stage:4-data-layer
-stage:5-compute
-stage:6-go-services
-stage:7-dockerfiles
-stage:8-ecs-wiring
-stage:9-smoke-test
-stage:10-cicd
-stage:11-otel
-stage:12-security-hardening
-stage:13-docs
+stage:1-infrastructure
+stage:2-go-services
+stage:3-dockerfiles-ecs
+stage:4-smoke-test
+stage:5-cicd
+stage:6-observability
+stage:7-security
+stage:8-docs
  
 type:infra
 type:code
