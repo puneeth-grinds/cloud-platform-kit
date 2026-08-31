@@ -24,42 +24,7 @@ over self-hosted Grafana — is a deliberate trade-off documented here.
  
 ## Architecture
  
-```
-Internet / user
-      │
-      ▼
-┌─────────────────────────────────────────────────────┐
-│  AWS VPC                          Terraform-managed  │
-│                                                      │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  Public subnets (two Availability Zones)    │    │
-│  │  ┌───────────────────────────────────────┐  │    │
-│  │  │  ALB  (Application Load Balancer)     │  │    │
-│  │  └───────────────────────────────────────┘  │    │
-│  └─────────────────────────────────────────────┘    │
-│                       │                             │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  Private subnets (two AZs) · ECS Fargate    │    │
-│  │  ┌──────────────┐    ┌──────────────────┐   │    │
-│  │  │ api-gateway  │───▶│vulnerability-    │   │    │
-│  │  │              │    │scanner           │   │    │
-│  │  └──────┬───────┘    └────────┬─────────┘   │    │
-│  │         │                    │              │    │
-│  │  ┌──────▼───────┐    ┌───────▼──────────┐   │    │
-│  │  │ RDS (Single-AZ)│   │ S3               │   │    │
-│  │  └──────────────┘    └──────────────────┘   │    │
-│  └─────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────┘
-      │                                    │
-      │  GitHub Actions                    │ OTel traces
-      │  build → push → deploy             ▼
-      │  ┌─────────────────┐    ┌──────────────────────┐
-      └─▶│ ECR             │    │ Grafana Cloud         │
-         │ Container images│    │ Dashboards · Alerts   │
-         └─────────────────┘    └──────────────────────┘
-```
- 
----
+![alt text](./assets/architecture.png)
  
 ## Services
  
