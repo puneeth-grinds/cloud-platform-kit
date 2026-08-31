@@ -1,44 +1,40 @@
 # AWS Authentication
 
-This project uses browser-based AWS CLI authentication with temporary credentials. Long-Llived AWS access keys are not created or stored
+This project uses browser-based AWS login with temporary credentials. No long-lived AWS access keys are created or stored.
 
-## Authentication Model
-Two profiles are made use:
+## Authentication Flow
+
+```text
+IAM user
+  -> browser login
+  -> temporary credentials
+  -> Terraform role
+  -> AWS resources
+```
+
+Three local AWS profiles are used:
 
 | Profile | Purpose |
 |---|---|
-| `cloud-platform-kit-login` | Holds the browser-authenticated AWS login session |
-| `cloud-platform-kit-personal` | Supplies temporary credentials to Terraform |
+| `cloud-platform-kit-login` | Holds the browser-authenticated login session |
+| `cloud-platform-kit-personal` | Makes the temporary login credentials available to other tools |
+| `cloud-platform-kit-terraform` | Assumes the Terraform execution role |
 
-## Prerequisites
+The IAM user is named `cloud-platform-kit`. It uses console access, MFA, and the AWS-managed `SignInLocalDevelopmentAccess` policy.
 
-- AWS CLI version 2.32.0 or newer
-- IAM user named `cloud-platform-kit`
-- Console access enabled for the IAM user
-- MFA enabled
-- AWS-managed `SignInLocalDevelopmentAccess` policy attached
+The IAM user can assume the `cloud-platform-kit-terraform` role. Terraform receives its AWS permissions from this role instead of using the IAM user's permissions directly.
 
-Check the aws CLI version:
-```
-aws --version
-```
-> The `SignInLocalDevelopmentAccess` policy only permits browser-based authentication. It does not grant permission to create or manage AWS resources.
+## Sign In
 
-## Sign in
-Start the browser authentication flow:
 ```bash
 aws login --profile cloud-platform-kit-login
 ```
-When prompted:
-1. Choose `us-west-1` as the region.
-2. Sign in to the correct personal AWS account.
-3. Use the `cloud-platform-kit` IAM username and its console password.
-4. Complete MFA verification.
-5. Confirm that the selected session belongs to the expected account and IAM user.
 
-## Configure Terraform access
+Sign in as the `cloud-platform-kit` IAM user and complete MFA verification.
 
-This only needs to be configured once:
+## One-Time Local Configuration
+
+Make the temporary login credentials available to Terraform:
 
 ```bash
 aws configure set credential_process \
@@ -51,27 +47,52 @@ aws configure set region us-west-1 \
   --profile cloud-platform-kit-personal
 ```
 
-## Verify the identity
+Configure the Terraform role profile:
+
+```bash
+aws configure set role_arn \
+  arn:aws:iam::512297269123:role/cloud-platform-kit-terraform \
+  --profile cloud-platform-kit-terraform
+```
+
+```bash
+aws configure set source_profile \
+  cloud-platform-kit-personal \
+  --profile cloud-platform-kit-terraform
+```
+
+```bash
+aws configure set region us-west-1 \
+  --profile cloud-platform-kit-terraform
+```
+
+These commands configure local profiles only. They do not store credentials in the repository.
+
+## Verify the Terraform Identity
 
 ```bash
 aws sts get-caller-identity \
-  --profile cloud-platform-kit-personal
+  --profile cloud-platform-kit-terraform
 ```
 
-Confirm that the expected personal AWS account and the `cloud-platform-kit` IAM user are shown.
+Confirm that the ARN contains:
+
+```text
+assumed-role/cloud-platform-kit-terraform
+```
 
 ## Run Terraform
 
 ```bash
-AWS_PROFILE=cloud-platform-kit-personal terraform plan
+AWS_PROFILE=cloud-platform-kit-terraform terraform plan
 ```
 
-Using `AWS_PROFILE` for each command prevents this project from affecting the AWS profiles used by other repositories.
+Selecting the profile for each command prevents this project from changing the AWS identity used by other repositories.
 
-## Sign out
+## Sign Out
 
 ```bash
 aws logout --profile cloud-platform-kit-login
 ```
 
-Temporary credentials are cached locally by the AWS CLI and expire automatically. No credentials are stored in this repository.
+The AWS CLI caches temporary credentials locally and they expire automatically. No credentials are stored in this repository.
