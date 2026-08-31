@@ -44,8 +44,9 @@ resource "aws_s3_bucket_public_access_block" "state_backend_tf_public_block" {
 
 terraform {
   backend "s3" {
-    bucket = "cloud-platform-kit-tf-state-512297269123 "
-    key = "state-backend/terraform.tfstate"
-    region = var.aws_region
+    bucket       = "cloud-platform-kit-tf-state-512297269123"
+    key          = "state-backend/terraform.tfstate"
+    region       = "us-west-1"
+    use_lockfile = true
   }
 }
