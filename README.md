@@ -168,7 +168,7 @@ cloud-platform-kit/
 ### 1. Bootstrap remote state (one-time)
  
 ```bash
-cd terraform/bootstrap
+cd terraform/state-backend
 terraform init
 terraform apply
 ```
