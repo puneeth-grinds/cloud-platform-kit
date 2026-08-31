@@ -92,7 +92,7 @@ response.
  
 | Layer | Technology |
 |---|---|
-| Language | Go 1.22 |
+| Language | Go 1.27 |
 | Infrastructure as Code | Terraform 1.10+ |
 | Local container runtime | Podman |
 | Compute | AWS ECS Fargate |
