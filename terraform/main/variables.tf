@@ -9,3 +9,9 @@ variable "aws_account_id" {
   description = "Personal AWS account ID"
   default     = "512297269123"
 }
+
+variable "project" {
+  type = string
+  description = "Specifies the project name"
+  default = "cloud-platform-kit"
+}
