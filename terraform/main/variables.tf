@@ -8,6 +8,11 @@ variable "aws_account_id" {
   type        = string
   description = "Personal AWS account ID"
   default     = "512297269123"
+
+  validation {
+    condition     = length(var.aws_account_id) == 12
+    error_message = "AWS account id must be valid of 12 characters"
+  }
 }
 
 variable "project" {
