@@ -39,7 +39,7 @@ variable "public_1b" {
   type        = string
   description = "Subnet for public_1b"
 }
-variable "privatec_1a" {
+variable "private_1a" {
   type        = string
   description = "Subnet for privatec_1a"
 }
