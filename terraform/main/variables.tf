@@ -26,3 +26,34 @@ variable "environment" {
   description = "Specifies the default environment"
   default     = "dev"
 }
+
+variable "vpc_cidr_block" {
+  type        = string
+  description = "Specifies the VPC CIDR Block"
+}
+variable "public_1a" {
+  type        = string
+  description = "Subnet for public_1a"
+}
+variable "public_1b" {
+  type        = string
+  description = "Subnet for public_1b"
+}
+variable "private_1a" {
+  type        = string
+  description = "Subnet for privatec_1a"
+}
+variable "private_1b" {
+  type        = string
+  description = "Subnet for private_1b"
+}
+
+variable "availability_zone_1a" {
+  type        = string
+  description = "Specifies the availability zone"
+}
+
+variable "availability_zone_1b" {
+  type        = string
+  description = "Specifies the availability zone"
+}
