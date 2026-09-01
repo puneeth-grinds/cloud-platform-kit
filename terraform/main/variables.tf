@@ -26,3 +26,8 @@ variable "environment" {
   description = "Specifies the default environment"
   default     = "dev"
 }
+
+variable "cidr_block" {
+  type        = string
+  description = "Specifies the VPC CIDR Block"
+}
