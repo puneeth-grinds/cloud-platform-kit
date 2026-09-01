@@ -1,0 +1,14 @@
+# VPC CIDR block
+vpc_cidr_block = "10.0.0.0/16"
+
+# Public subnets
+public_1a = "10.0.1.0/24"
+public_1b = "10.0.2.0/24"
+
+# Private subnets
+private_1a = "10.0.3.0/24"
+private_1b = "10.0.4.0/24"
+
+# Availability zones
+availability_zone_1a = "us-west-1a"
+availability_zone_1b = "us-west-1b"
