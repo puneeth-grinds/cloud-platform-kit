@@ -15,3 +15,9 @@ variable "project" {
   description = "Specifies the project name"
   default     = "cloud-platform-kit"
 }
+
+variable "environment" {
+  type        = string
+  description = "Specifies the default environment"
+  default     = "dev"
+}
