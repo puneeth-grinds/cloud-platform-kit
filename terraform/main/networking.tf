@@ -8,22 +8,25 @@ resource "aws_internet_gateway" "gateway" {
 }
 
 resource "aws_subnet" "public_1a" {
-  vpc_id     = aws_vpc.vpc.id
-  availability_zone = 
-  cidr_block = var.public_1a
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.public_1a
+  availability_zone = var.availability_zone_1a
 }
 
 resource "aws_subnet" "public_1b" {
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = var.public_1b
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.public_1b
+  availability_zone = var.availability_zone_1b
 }
 
 resource "aws_subnet" "private_1a" {
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = var.private_1a
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.private_1a
+  availability_zone = var.availability_zone_1a
 }
 
 resource "aws_subnet" "private_1b" {
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = var.private_1b
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.private_1b
+  availability_zone = var.availability_zone_1b
 }
