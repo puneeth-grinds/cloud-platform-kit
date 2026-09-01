@@ -10,8 +10,8 @@ variable "aws_account_id" {
   default     = "512297269123"
 
   validation {
-    condition     = length(var.aws_account_id) == 12
-    error_message = "AWS account id must be valid of 12 characters"
+    condition     = can(regex("^[0-9]{12}$", var.aws_account_id))
+    error_message = "AWS account id must be valid of 12 digits"
   }
 }
 
