@@ -47,3 +47,13 @@ variable "private_1b" {
   type        = string
   description = "Subnet for private_1b"
 }
+
+variable "availability_zone_1a" {
+  type        = string
+  description = "Specifies the availability zone"
+}
+
+variable "availability_zone_1b" {
+  type        = string
+  description = "Specifies the availability zone"
+}

@@ -3,13 +3,13 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 }
-
 resource "aws_internet_gateway" "gateway" {
   vpc_id = aws_vpc.vpc.id
 }
 
 resource "aws_subnet" "public_1a" {
   vpc_id     = aws_vpc.vpc.id
+  availability_zone = 
   cidr_block = var.public_1a
 }
 
