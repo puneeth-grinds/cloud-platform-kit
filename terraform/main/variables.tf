@@ -1,7 +1,7 @@
 variable "aws_region" {
-  type = string
+  type        = string
   description = "Specifies the AWS region"
-  default = "us-west-1"
+  default     = "us-west-1"
 }
 
 variable "aws_account_id" {
@@ -11,7 +11,7 @@ variable "aws_account_id" {
 }
 
 variable "project" {
-  type = string
+  type        = string
   description = "Specifies the project name"
-  default = "cloud-platform-kit"
+  default     = "cloud-platform-kit"
 }
