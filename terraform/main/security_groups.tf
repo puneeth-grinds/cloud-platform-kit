@@ -55,3 +55,11 @@ resource "aws_vpc_security_group_egress_rule" "ecs_sg_egress_rds" {
   to_port                      = 5432
   ip_protocol                  = "tcp"
 }
+
+resource "aws_vpc_security_group_egress_rule" "ecs_sg_egress_anywhere" {
+  security_group_id            = aws_security_group.rds_sg.id
+  referenced_security_group_id = aws_security_group.rds_sg.id
+  from_port                    = 0
+  to_port                      = 0
+  ip_protocol                  = -1
+}
