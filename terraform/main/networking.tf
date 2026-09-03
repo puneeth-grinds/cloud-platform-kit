@@ -51,3 +51,68 @@ resource "aws_subnet" "private_1b" {
     Name = "private-subnet-1b"
   }
 }
+
+resource "aws_eip" "elastic_ip" {
+  domain = "vpc"
+
+
+  tags = {
+    Name = "Elastic-IP"
+  }
+}
+
+resource "aws_nat_gateway" "nat_gateway" {
+  allocation_id = aws_eip.elastic_ip.id
+  subnet_id     = aws_subnet.public_1a.id
+  depends_on    = [aws_internet_gateway.gateway]
+
+  tags = {
+    Name = "Nat-Gateway"
+  }
+}
+
+resource "aws_route_table" "public-route-table" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gateway.id
+  }
+
+  tags = {
+    Name = "Public-Routing-Table"
+  }
+
+}
+
+resource "aws_route_table" "private-route-table" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+  }
+  tags = {
+    Name = "Private-Routing_Table"
+  }
+}
+
+resource "aws_route_table_association" "public_route_table_association_1a" {
+  subnet_id      = aws_subnet.public_1a.id
+  route_table_id = aws_route_table.public-route-table.id
+}
+
+resource "aws_route_table_association" "public_route_table_association_1b" {
+  subnet_id      = aws_subnet.public_1b.id
+  route_table_id = aws_route_table.public-route-table.id
+}
+
+resource "aws_route_table_association" "private_route_table_association_1a" {
+  subnet_id      = aws_subnet.private_1a.id
+  route_table_id = aws_route_table.private-route-table.id
+}
+
+resource "aws_route_table_association" "private_route_table_association_1b" {
+  subnet_id      = aws_subnet.private_1b.id
+  route_table_id = aws_route_table.private-route-table.id
+}
