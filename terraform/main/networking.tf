@@ -54,7 +54,7 @@ resource "aws_subnet" "private_1b" {
 
 resource "aws_eip" "elastic_ip" {
   domain = "vpc"
-  
+
 
   tags = {
     Name = "Elastic-IP"
@@ -64,7 +64,7 @@ resource "aws_eip" "elastic_ip" {
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.elastic_ip.id
   subnet_id     = aws_subnet.public_1a.id
-  depends_on = [ aws_internet_gateway.gateway ]
+  depends_on    = [aws_internet_gateway.gateway]
 
   tags = {
     Name = "Nat-Gateway"
@@ -77,7 +77,7 @@ resource "aws_route_table" "public-route-table" {
   route {
     cidr_block = "10.0.0.0/16"
     gateway_id = "local"
-    
+
   }
 
   route {
@@ -106,11 +106,21 @@ resource "aws_route_table" "private-route-table" {
 }
 
 resource "aws_route_table_association" "public_route_table_association" {
-  subnet_id = [ aws_subnet.private_1a, aws_subnet.private_1b ]
+  subnet_id      = aws_subnet.public_1a
+  route_table_id = aws_route_table.public-route-table
+}
+
+resource "aws_route_table_association" "public_route_table_association" {
+  subnet_id      = aws_subnet.public_1b
+  route_table_id = aws_route_table.public-route-table
+}
+
+resource "aws_route_table_association" "private_route_table_association" {
+  subnet_id      = aws_subnet.private_1a
   route_table_id = aws_route_table.private-route-table
 }
 
 resource "aws_route_table_association" "private_route_table_association" {
-  subnet_id = [ aws_subnet.public_1a, aws_subnet.public_1b ]
-  route_table_id = aws_route_table.public-route-table
+  subnet_id      = aws_subnet.private_1b
+  route_table_id = aws_route_table.private-route-table
 }
