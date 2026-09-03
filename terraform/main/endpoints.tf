@@ -11,6 +11,7 @@ resource "aws_vpc_endpoint" "ecr_interface_endpoint_dkr" {
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.allow_tls.id]
 }
 
 resource "aws_vpc_endpoint" "ecr_interface_endpoint_api" {
@@ -19,6 +20,7 @@ resource "aws_vpc_endpoint" "ecr_interface_endpoint_api" {
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.allow_tls.id]
 }
 
 resource "aws_security_group" "allow_tls" {
