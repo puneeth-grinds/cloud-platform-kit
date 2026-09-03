@@ -92,6 +92,9 @@ resource "aws_route_table" "private-route-table" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
+  tags = {
+    Name = "Private-Routing_Table"
+  }
 }
 
 resource "aws_route_table_association" "public_route_table_association_1a" {
