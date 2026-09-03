@@ -21,13 +21,23 @@ resource "aws_vpc_endpoint" "ecr_interface_endpoint_api" {
   private_dns_enabled = true
 }
 
-resource "aws_security_group" "allow_https" {
-  name = "allow_https"
-  description = "Allow HTTPS inbound traffic"
+resource "aws_security_group" "allow_tls" {
+  name = "allow_tls"
+  description = "Allow TLS inbound traffic"
   vpc_id = aws_vpc.vpc.id
 
   tags = {
     Name = "security_group_allow_https"
   }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_tls_igress_rule" {
+  security_group_id = aws_security_group.allow_tls.id
+
+  # Restricted source network
+  cidr_ipv4 = "10.0.0.0/16"
+  from_port = 443
+  ip_protocol = "tcp"
+  to_port = 443
 
 }
