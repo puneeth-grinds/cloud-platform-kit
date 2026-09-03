@@ -20,3 +20,14 @@ resource "aws_vpc_endpoint" "ecr_interface_endpoint_api" {
   subnet_ids          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
   private_dns_enabled = true
 }
+
+resource "aws_security_group" "allow_https" {
+  name = "allow_https"
+  description = "Allow HTTPS inbound traffic"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "security_group_allow_https"
+  }
+
+}
