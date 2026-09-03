@@ -53,7 +53,8 @@ resource "aws_subnet" "private_1b" {
 }
 
 resource "aws_eip" "elastic_ip" {
-  domain = aws_vpc.vpc.id
+  domain = "vpc"
+  
 
   tags = {
     Name = "Elastic-IP"
@@ -62,7 +63,7 @@ resource "aws_eip" "elastic_ip" {
 
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.elastic_ip.id
-  subnet_id     = var.public_1a.id
+  subnet_id     = var.public_1a
   depends_on    = [aws_internet_gateway.gateway.id]
 
   tags = {
@@ -71,7 +72,7 @@ resource "aws_nat_gateway" "nat_gateway" {
 }
 
 resource "aws_route_table" "public-route-table" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = aws_vpc.vpc
 
   route {
     cidr_block = "10.0.0.0/16"
