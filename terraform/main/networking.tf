@@ -62,15 +62,15 @@ resource "aws_eip" "elastic_ip" {
 
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.elastic_ip.id
-  subnet_id = var.public_1a.id
-  depends_on = [ aws_internet_gateway.gateway.id ]
-  
+  subnet_id     = var.public_1a.id
+  depends_on    = [aws_internet_gateway.gateway.id]
+
   tags = {
     Name = "Nat-Gateway"
   }
 }
 
-resource "aws_route_table" "route-table" {
+resource "aws_route_table" "public-route-table" {
   vpc_id = aws_vpc.vpc.id
 
   route {
@@ -83,4 +83,22 @@ resource "aws_route_table" "route-table" {
     gateway_id = aws_internet_gateway.gateway.id
   }
 
+  tags = {
+    Name = "Publi-Routing-Table"
+  }
+
+}
+
+resource "aws_route_table" "private-route-table" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block     = "10.0.0.0/16"
+    nat_gateway_id = "local"
+  }
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+  }
 }
