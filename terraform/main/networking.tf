@@ -51,3 +51,11 @@ resource "aws_subnet" "private_1b" {
     Name = "private-subnet-1b"
   }
 }
+
+resource "aws_eip" "elastic_ip" {
+  domain = aws_vpc.vpc.id
+
+  tags = {
+    Name = "Elastic-IP"
+  }
+}
