@@ -90,3 +90,28 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p1" {
 EOF
 
 }
+
+resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p2" {
+  repository = aws_ecr_repository.ecr_api_gateway.name
+
+  policy = <<EOF
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Keep only the newest image ",
+      "selection": {
+        "tagStatus": "untagged",
+        "countType": "sinceImagePushed",
+        "countUnit": "days",
+        "countNumber": 10
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}
+EOF
+
+}
