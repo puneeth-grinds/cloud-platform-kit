@@ -65,3 +65,28 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway_p2" {
 EOF
 
 }
+
+resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p1" {
+  repository = aws_ecr_repository.ecr_vulnerability_scanner.name
+
+  policy = <<EOF
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Expire images older than 1 days",
+      "selection": {
+        "tagStatus": "untagged",
+        "countType": "sinceImagePushed",
+        "countUnit": "days",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}
+EOF
+
+}
