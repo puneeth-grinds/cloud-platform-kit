@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "ecr_api_gateway" {
-  name                 = "ecr for api gateway"
+  name                 = "api-gateway"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -8,7 +8,7 @@ resource "aws_ecr_repository" "ecr_api_gateway" {
 }
 
 resource "aws_ecr_repository" "ecr_vulnerability_scanner" {
-  name                 = "ecr for vulnerability scanner"
+  name                 = "vulnerability-scanner"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -16,7 +16,7 @@ resource "aws_ecr_repository" "ecr_vulnerability_scanner" {
   }
 }
 
-resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway_p1" {
+resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway" {
   repository = aws_ecr_repository.ecr_api_gateway.name
 
   policy = <<EOF
@@ -34,21 +34,9 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway_p1" {
       "action": {
         "type": "expire"
       }
-    }
-  ]
-}
-EOF
-
-}
-
-resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway_p2" {
-  repository = aws_ecr_repository.ecr_api_gateway.name
-
-  policy = <<EOF
-{
-  "rules": [
+    },
     {
-      "rulePriority": 1,
+      "rulePriority": 2,
       "description": "Keep only the newest image ",
       "selection": {
         "tagStatus": "any",
@@ -66,7 +54,7 @@ EOF
 
 }
 
-resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p1" {
+resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner" {
   repository = aws_ecr_repository.ecr_vulnerability_scanner.name
 
   policy = <<EOF
@@ -76,7 +64,7 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p1" {
       "rulePriority": 1,
       "description": "Expire images older than 1 days",
       "selection": {
-        "tagStatus": "any",
+        "tagStatus": "untagged",
         "countType": "sinceImagePushed",
         "countUnit": "days",
         "countNumber": 1
@@ -84,24 +72,12 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p1" {
       "action": {
         "type": "expire"
       }
-    }
-  ]
-}
-EOF
-
-}
-
-resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner_p2" {
-  repository = aws_ecr_repository.ecr_api_gateway.name
-
-  policy = <<EOF
-{
-  "rules": [
+    },
     {
       "rulePriority": 2,
       "description": "Keep only the newest image ",
       "selection": {
-        "tagStatus": "any",
+        "tagStatus": "untagged",
         "countType": "sinceImagePushed",
         "countUnit": "days",
         "countNumber": 10
