@@ -26,7 +26,7 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway" {
       "rulePriority": 1,
       "description": "Expire images older than 1 days",
       "selection": {
-        "tagStatus": "any",
+        "tagStatus": "untagged",
         "countType": "sinceImagePushed",
         "countUnit": "days",
         "countNumber": 1
@@ -39,7 +39,7 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway" {
       "rulePriority": 2,
       "description": "Keep only the newest image ",
       "selection": {
-        "tagStatus": "any",
+        "tagStatus": "untagged",
         "countType": "sinceImagePushed",
         "countUnit": "days",
         "countNumber": 10
@@ -78,8 +78,7 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner" {
       "description": "Keep only the newest image ",
       "selection": {
         "tagStatus": "untagged",
-        "countType": "sinceImagePushed",
-        "countUnit": "days",
+        "countType": "imageCountMoreThan",
         "countNumber": 10
       },
       "action": {
