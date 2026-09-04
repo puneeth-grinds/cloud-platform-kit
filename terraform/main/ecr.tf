@@ -39,9 +39,8 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_api_gateway" {
       "rulePriority": 2,
       "description": "Keep only the newest image ",
       "selection": {
-        "tagStatus": "untagged",
-        "countType": "sinceImagePushed",
-        "countUnit": "days",
+        "tagStatus": "any",
+        "countType": "imageCountMoreThan",
         "countNumber": 10
       },
       "action": {
