@@ -76,7 +76,7 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy_vul_scanner" {
       "rulePriority": 2,
       "description": "Keep only the newest image ",
       "selection": {
-        "tagStatus": "untagged",
+        "tagStatus": "any",
         "countType": "imageCountMoreThan",
         "countNumber": 10
       },
