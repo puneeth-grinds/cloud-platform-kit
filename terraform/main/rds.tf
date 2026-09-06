@@ -1,7 +1,7 @@
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "RDS_Subnet"
-  subnet_ids = [aws_subnet.private_1a, aws_subnet.private_1b]
+  name       = "rds"
+  subnet_ids = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
 
   tags = {
     Name = "RDS subnet group"
@@ -12,7 +12,7 @@ resource "aws_db_instance" "RDS_DB" {
   engine                 = "PostgreSQL"
   engine_version         = "16"
   instance_class         = "db.t3.micro"
-  allocated_storage      = "20GB"
+  allocated_storage      = 20
   multi_az               = false
   availability_zone      = var.availability_zone_1a
   db_name                = var.rds_database_name
@@ -21,67 +21,18 @@ resource "aws_db_instance" "RDS_DB" {
   publicly_accessible    = false
   skip_final_snapshot    = true
   deletion_protection    = false
-  vpc_security_group_ids = [aws_db_subnet_group.rds_subnet_group.id]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+
 
   tags = {
     Name = "Cloud-Platform-Kit-RDS-Database"
   }
 }
-
-resource "aws_ssm_parameter" "db_endpoint" {
-  name        = "/cloud-platform-kit/db/connection-string"
-  description = "Database Endpoint"
-  type        = "secureString"
-  value       = aws_db_instance.RDS_DB.endpoint
-  tags = {
-    Name = "RDS Database endpoint ssm parameter"
-  }
-}
-
-resource "aws_ssm_parameter" "db_port" {
-  name        = "/cloud-platform-kit/db/connection-string"
-  description = "Database Port"
-  type        = "secureString"
-  value       = aws_db_instance.RDS_DB.port
-  tags = {
-    Name = "RDS Database port ssm parameter"
-  }
-}
-
-resource "aws_ssm_parameter" "db_name" {
-  name        = "/cloud-platform-kit/db/connection-string"
-  description = "Database Port"
-  type        = "secureString"
-  value       = aws_db_instance.RDS_DB.db_name
-  tags = {
-    Name = "RDS Database name ssm parameter"
-  }
-}
-
-resource "aws_ssm_parameter" "db_username" {
-  name        = "/cloud-platform-kit/db/connection-string"
-  description = "Database Port"
-  type        = "secureString"
-  value       = aws_db_instance.RDS_DB.username
-  tags = {
-    Name = "RDS Database name ssm username"
-  }
-}
-
-resource "aws_ssm_parameter" "db_password" {
-  name        = "/cloud-platform-kit/db/connection-string"
-  description = "Database Port"
-  type        = "secureString"
-  value       = aws_db_instance.RDS_DB.password
-  tags = {
-    Name = "RDS Database name ssm password"
-  }
-}
-
 resource "aws_ssm_parameter" "rds_db_connection_string" {
   name        = "/cloud-platform-kit/db/connection-string"
   description = "Full database connection string"
-  type        = "secureString"
+  type        = "SecureString"
   value       = "postgresql://${var.rds_database_username}:${var.rds_database_password}@${aws_db_instance.RDS_DB.endpoint}:${aws_db_instance.RDS_DB.port}/${aws_db_instance.RDS_DB.db_name}"
   tags = {
     Name = "RDS Database full connection string"
