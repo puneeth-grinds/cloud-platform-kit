@@ -11,3 +11,13 @@ resource "aws_s3_bucket_versioning" "s3_storage_versioning" {
     status = "Enabled"
   }
 }
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "s3_storage_sse" {
+  bucket = aws_s3_bucket.s3_storage.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
