@@ -62,3 +62,8 @@ variable "rds_database_name" {
   type        = string
   description = "Specifies the RDS database name"
 }
+
+variable "rds_database_username" {
+  type        = string
+  description = "Specifies the RDS database username"
+}
