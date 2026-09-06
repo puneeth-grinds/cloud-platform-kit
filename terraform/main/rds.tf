@@ -9,7 +9,10 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 }
 
 resource "aws_db_instance" "RDS_DB" {
-  engine = "PostgreSQL"
-  engine_version = "16"
-  instance_class = "db.t3.micro"
+  engine            = "PostgreSQL"
+  engine_version    = "16"
+  instance_class    = "db.t3.micro"
+  allocated_storage = "20GB"
+  multi_az          = false
+  availability_zone = var.availability_zone_1a
 }

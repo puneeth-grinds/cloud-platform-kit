@@ -57,3 +57,8 @@ variable "availability_zone_1b" {
   type        = string
   description = "Specifies the availability zone"
 }
+
+variable "rds_database_name" {
+  type        = string
+  description = "Specifies the RDS database name"
+}
