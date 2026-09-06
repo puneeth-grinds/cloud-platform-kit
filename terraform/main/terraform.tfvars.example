@@ -15,5 +15,5 @@ availability_zone_1b = "us-west-1b"
 
 # Database Name
 rds_database_name = "cloudplatformkitrds"
-rds_database_username = "your db username here"
-rds_database_password = "your db password here"
+rds_database_username = "dbadmin"
+rds_database_password = "ReplaceWithSecurePassword123"
