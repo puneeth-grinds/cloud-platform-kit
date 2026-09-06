@@ -77,3 +77,13 @@ resource "aws_ssm_parameter" "db_password" {
     Name = "RDS Database name ssm password"
   }
 }
+
+resource "aws_ssm_parameter" "rds_db_connection_string" {
+  name        = "/cloud-platform-kit/db/connection-string"
+  description = "Full database connection string"
+  type        = "secureString"
+  value       = "postgresql://${var.rds_database_username}:${var.rds_database_password}@${aws_db_instance.RDS_DB.endpoint}:${aws_db_instance.RDS_DB.port}/${aws_db_instance.RDS_DB.db_name}"
+  tags = {
+    Name = "RDS Database full connection string"
+  }
+}
