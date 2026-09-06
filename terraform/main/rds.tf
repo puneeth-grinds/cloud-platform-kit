@@ -15,4 +15,7 @@ resource "aws_db_instance" "RDS_DB" {
   allocated_storage = "20GB"
   multi_az          = false
   availability_zone = var.availability_zone_1a
+  db_name           = var.rds_database_name
+  username          = var.rds_database_name
+  password          = var.rds_database_password
 }
