@@ -67,3 +67,9 @@ variable "rds_database_username" {
   type        = string
   description = "Specifies the RDS database username"
 }
+
+variable "rds_database_password" {
+  type        = string
+  description = "Specifies the RDS database password"
+  sensitive   = true
+}
