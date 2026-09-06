@@ -8,7 +8,11 @@ output "ecr_vulnerability_scanner_url" {
   description = "ECR Repository URL for Vulnerability Scanner"
 }
 
-output "s3_bucket_storage" {
+output "s3_bucket_storage_name" {
   value       = aws_s3_bucket.s3_storage.bucket
   description = "S3 storage bucket name"
+}
+output "s3_bucket_storage_arn" {
+  value       = aws_s3_bucket.s3_storage.arn
+  description = "S3 storage bucket arn"
 }
