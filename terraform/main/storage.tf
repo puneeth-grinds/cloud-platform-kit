@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "s3_storage" {
-  bucket = "cloud-platform-kit-app-=${var.aws_account_id}"
+  bucket = "cloud-platform-kit-app-${var.aws_account_id}"
   tags = {
     Name = "cloud-platform-kit-storage-bucket"
   }
@@ -33,7 +33,7 @@ resource "aws_s3_bucket_public_access_block" "se_storage_public_access_block" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "s3_storage_lifecycle" {
   bucket     = aws_s3_bucket.s3_storage.id
-  depends_on = [aws_s3_bucket_versioning.s3_storage_versioning.id]
+  depends_on = [aws_s3_bucket_versioning.s3_storage_versioning]
 
   rule {
     id     = "expire-objects-after-90-days"
