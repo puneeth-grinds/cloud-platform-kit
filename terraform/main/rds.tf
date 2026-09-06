@@ -27,3 +27,13 @@ resource "aws_db_instance" "RDS_DB" {
     Name = "Cloud-Platform-Kit-RDS-Database"
   }
 }
+
+resource "aws_ssm_parameter" "db_endpoint" {
+  name        = "/cloud-platform-kit/db/connection-string"
+  description = "Database Endpoint"
+  type        = "string"
+  value       = aws_db_instance.RDS_DB.endpoint
+  tags = {
+    Name = "RDS Database endpoint ssm parameter"
+  }
+}
