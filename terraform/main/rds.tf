@@ -31,9 +31,19 @@ resource "aws_db_instance" "RDS_DB" {
 resource "aws_ssm_parameter" "db_endpoint" {
   name        = "/cloud-platform-kit/db/connection-string"
   description = "Database Endpoint"
-  type        = "string"
+  type        = "secureString"
   value       = aws_db_instance.RDS_DB.endpoint
   tags = {
     Name = "RDS Database endpoint ssm parameter"
+  }
+}
+
+resource "aws_ssm_parameter" "db_port" {
+  name        = "/cloud-platform-kit/db/connection-string"
+  description = "Database Port"
+  type        = "secureString"
+  value       = aws_db_instance.RDS_DB.port
+  tags = {
+    Name = "RDS Database port ssm parameter"
   }
 }
