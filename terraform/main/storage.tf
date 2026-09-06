@@ -32,8 +32,21 @@ resource "aws_s3_bucket_public_access_block" "se_storage_public_access_block" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "s3_storage_lifecycle" {
-  bucket = aws_s3_bucket.s3_storage.id
-  depends_on = [ aws_s3_bucket_versioning.s3_storage_versioning.id ]
-  
+  bucket     = aws_s3_bucket.s3_storage.id
+  depends_on = [aws_s3_bucket_versioning.s3_storage_versioning.id]
+
+  rule {
+    id     = "expire-objects-after-90-days"
+    status = "Enabled"
+
+    filter {}
+
+    expiration {
+      days = 90
+    }
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+  }
 
 }
