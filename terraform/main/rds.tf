@@ -22,4 +22,8 @@ resource "aws_db_instance" "RDS_DB" {
   skip_final_snapshot    = true
   deletion_protection    = false
   vpc_security_group_ids = [aws_db_subnet_group.rds_subnet_group.id]
+
+  tags = {
+    Name = "Cloud-Platform-Kit-RDS-Database"
+  }
 }
