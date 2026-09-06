@@ -47,3 +47,13 @@ resource "aws_ssm_parameter" "db_port" {
     Name = "RDS Database port ssm parameter"
   }
 }
+
+resource "aws_ssm_parameter" "db_name" {
+  name        = "/cloud-platform-kit/db/connection-string"
+  description = "Database Port"
+  type        = "secureString"
+  value       = aws_db_instance.RDS_DB.db_name
+  tags = {
+    Name = "RDS Database name ssm parameter"
+  }
+}
