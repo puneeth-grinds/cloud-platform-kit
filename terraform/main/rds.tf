@@ -16,7 +16,7 @@ resource "aws_db_instance" "RDS_DB" {
   multi_az               = false
   availability_zone      = var.availability_zone_1a
   db_name                = var.rds_database_name
-  username               = var.rds_database_name
+  username               = var.rds_database_username
   password               = var.rds_database_password
   publicly_accessible    = false
   skip_final_snapshot    = true
