@@ -35,7 +35,20 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_service_discovery_private_dns_namespace" "dns_namespace" {
-  vpc = aws_vpc.vpc.id
-  name = "cloud-platform-kit.local"
+  vpc         = aws_vpc.vpc.id
+  name        = "cloud-platform-kit.local"
   description = "Private DNS namespace for API gateway to find vul scanner"
+}
+
+resource "aws_service_discovery_service" "service_discovery_vul_scanner" {
+  name = "vulnerability-scanner"
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.dns_namespace.id
+
+    dns_records {
+      type = "A"
+      ttl = 10
+    }
+    routing_policy = "MULTI-VALUE"
+  }
 }
