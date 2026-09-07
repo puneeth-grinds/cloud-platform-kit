@@ -32,5 +32,10 @@ resource "aws_lb_listener" "lb_listener" {
 
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = "cloud-platform-kit"
-  
+}
+
+resource "aws_service_discovery_private_dns_namespace" "dns_namespace" {
+  vpc = aws_vpc.vpc.id
+  name = "cloud-platform-kit.local"
+  description = "Private DNS namespace for API gateway to find vul scanner"
 }
