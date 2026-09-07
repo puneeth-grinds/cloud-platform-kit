@@ -63,7 +63,7 @@ resource "aws_cloudwatch_log_group" "cw_log_group_vul" {
   retention_in_days = 7
 }
 
-resource "aws_ecs_task_definition" "ecs_task" {
+resource "aws_ecs_task_definition" "ecs_task_apigateway" {
   family                   = "api-gateway"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -110,4 +110,15 @@ resource "aws_ecs_task_definition" "ecs_task" {
       }
     }
   ])
+}
+
+resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
+  family                   = "vulnerability-scanner"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  task_role_arn            = aws_iam_role.vulnerability_scanner_task.arn
+  
 }
