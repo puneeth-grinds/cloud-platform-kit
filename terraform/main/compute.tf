@@ -163,9 +163,9 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
 }
 
 resource "aws_ecs_service" "ecs_service_apigateway" {
-  name = "api-gateway"
-  cluster = aws_ecs_cluster.ecs_cluster.id
+  name            = "api-gateway"
+  cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.ecs_task_apigateway.arn
-  desired_count = 1
-  launch_type = "FARGATE"
+  desired_count   = 1
+  launch_type     = "FARGATE"
 }
