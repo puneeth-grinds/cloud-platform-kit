@@ -194,6 +194,7 @@ resource "aws_ecs_service" "ecs_service_vulscanner" {
     security_groups  = [aws_security_group.ecs_sg]
     assign_public_ip = false
   }
-
-  
+  service_registries {
+    registry_arn = aws_service_discovery_service.service_discovery_vul_scanner.arn
+  }
 }
