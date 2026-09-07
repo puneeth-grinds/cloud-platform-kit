@@ -140,15 +140,23 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
       secrets = [
         {
           name      = "DATABASE_URL"
-          valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
+          valueFrom = "aws_ssm_parameter.rds_db_connection_string.arn"
         }
       ]
       environment = [
         {
           name  = "S3_BUCKET"
-          value = "http://vulnerability-scanner.cloud-platform-kit.local:8081"
+          value = aws_s3_bucket.s3_storage.bucket
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.cw_log_group_vul.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ]
 }
