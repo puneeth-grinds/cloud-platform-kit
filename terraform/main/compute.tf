@@ -120,5 +120,17 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.vulnerability_scanner_task.arn
-  
+
+  container_definitions = [
+    {
+      name      = "vulnerability-scanner"
+      image     = "public.ecr.aws/docker/library/busybox:1.38.0"
+      essential = true
+      command = [
+        "sh",
+        "-c",
+        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8080 -h /www"
+      ]
+    }
+  ]
 }
