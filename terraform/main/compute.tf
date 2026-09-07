@@ -52,3 +52,8 @@ resource "aws_service_discovery_service" "service_discovery_vul_scanner" {
     routing_policy = "MULTI-VALUE"
   }
 }
+
+resource "aws_cloudwatch_log_group" "cw_log_group" {
+  name = "/ecs/api-gateway"
+  retention_in_days = 7
+}
