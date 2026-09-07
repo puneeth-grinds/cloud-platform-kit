@@ -121,15 +121,15 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.vulnerability_scanner_task.arn
 
-  container_definitions = [
-    {
+  container_definitions = jsondecode([
+        {
       name      = "vulnerability-scanner"
       image     = "public.ecr.aws/docker/library/busybox:1.38.0"
       essential = true
       command = [
         "sh",
         "-c",
-        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8080 -h /www"
+        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8081 -h /www"
       ]
       portMappings = [
         {
@@ -140,7 +140,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
       secrets = [
         {
           name      = "DATABASE_URL"
-          valueFrom = "aws_ssm_parameter.rds_db_connection_string.arn"
+          valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
         }
       ]
       environment = [
@@ -158,5 +158,6 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
         }
       }
     }
-  ]
+  ])
+  
 }
