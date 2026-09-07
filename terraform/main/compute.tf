@@ -176,7 +176,7 @@ resource "aws_ecs_service" "ecs_service_apigateway" {
   }
   load_balancer {
     target_group_arn = aws_alb_target_group.api_alb_target.arn
-    container_name = "api-gateway"
-    container_port = 8080
+    container_name   = "api-gateway"
+    container_port   = 8080
   }
 }
