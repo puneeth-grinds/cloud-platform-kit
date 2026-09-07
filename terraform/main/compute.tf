@@ -47,7 +47,7 @@ resource "aws_service_discovery_service" "service_discovery_vul_scanner" {
 
     dns_records {
       type = "A"
-      ttl = 10
+      ttl  = 10
     }
     routing_policy = "MULTI-VALUE"
   }
