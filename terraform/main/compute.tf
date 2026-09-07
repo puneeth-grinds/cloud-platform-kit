@@ -188,7 +188,6 @@ resource "aws_ecs_service" "ecs_service_vulscanner" {
   task_definition = aws_ecs_task_definition.ecs_task_vulscanner.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-  depends_on      = [aws_lb_listener.lb_listener]
   network_configuration {
     subnets          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
     security_groups  = [aws_security_group.ecs_sg.id]
