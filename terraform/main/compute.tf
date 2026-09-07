@@ -49,7 +49,7 @@ resource "aws_service_discovery_service" "service_discovery_vul_scanner" {
       type = "A"
       ttl  = 10
     }
-    routing_policy = "MULTI-VALUE"
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -171,7 +171,7 @@ resource "aws_ecs_service" "ecs_service_apigateway" {
   depends_on      = [aws_lb_listener.lb_listener]
   network_configuration {
     subnets          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
-    security_groups  = [aws_security_group.ecs_sg]
+    security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = false
   }
   load_balancer {
@@ -191,7 +191,7 @@ resource "aws_ecs_service" "ecs_service_vulscanner" {
   depends_on      = [aws_lb_listener.lb_listener]
   network_configuration {
     subnets          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
-    security_groups  = [aws_security_group.ecs_sg]
+    security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = false
   }
   service_registries {
