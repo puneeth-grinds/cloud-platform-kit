@@ -33,6 +33,6 @@ output "vulnerability_scanner_task_role_arn" {
 }
 
 output "alb_dns_name" {
-  value = aws_lb.lb.dns_name
+  value       = aws_lb.lb.dns_name
   description = "Provides the lb dns name"
 }
