@@ -20,7 +20,7 @@ resource "aws_alb_target_group" "api_alb_target" {
 }
 
 resource "aws_lb_listener" "lb_listener" {
-  port              = "8080"
+  port              = "80"
   protocol          = "HTTP"
   load_balancer_arn = aws_lb.lb.arn
 
