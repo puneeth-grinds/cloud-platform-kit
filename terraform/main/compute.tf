@@ -168,4 +168,5 @@ resource "aws_ecs_service" "ecs_service_apigateway" {
   task_definition = aws_ecs_task_definition.ecs_task_apigateway.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  depends_on      = [aws_lb_listener.lb_listener]
 }
