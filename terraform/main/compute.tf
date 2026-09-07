@@ -2,7 +2,7 @@ resource "aws_lb" "lb" {
   name               = "cloudplatformkitlb"
   internal           = false
   load_balancer_type = "application"
-  subnets            = [aws_subnet.public_1a.id, aws_subnet.private_1b.id]
+  subnets            = [aws_subnet.public_1a.id, aws_subnet.public_1b.id]
   security_groups    = [aws_security_group.alb_sg.id]
 }
 
