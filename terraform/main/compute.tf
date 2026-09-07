@@ -174,4 +174,9 @@ resource "aws_ecs_service" "ecs_service_apigateway" {
     security_groups  = [aws_security_group.ecs_sg]
     assign_public_ip = false
   }
+  load_balancer {
+    target_group_arn = aws_alb_target_group.api_alb_target.arn
+    container_name = "api-gateway"
+    container_port = 8080
+  }
 }
