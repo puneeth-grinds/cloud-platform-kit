@@ -53,7 +53,12 @@ resource "aws_service_discovery_service" "service_discovery_vul_scanner" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "cw_log_group" {
+resource "aws_cloudwatch_log_group" "cw_log_group_ecs" {
   name              = "/ecs/api-gateway"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "cw_log_group_vul" {
+  name              = "/ecs/vulnerability-scanner"
   retention_in_days = 7
 }
