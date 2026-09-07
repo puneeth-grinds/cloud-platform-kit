@@ -93,8 +93,21 @@ resource "aws_ecs_task_definition" "ecs_task" {
           name      = "DATABASE_URL"
           valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
         }
-
       ]
+      environment = [
+        {
+          name  = "SCANNER_URL"
+          value = "http://vulnerability-scanner.cloud-platform-kit.local:8081"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.log_group_ecs.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 }
