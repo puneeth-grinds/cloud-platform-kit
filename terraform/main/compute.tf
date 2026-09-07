@@ -74,8 +74,9 @@ resource "aws_ecs_task_definition" "ecs_task" {
 
   container_definitions = jsonencode([
     {
-      name  = "api-gateway"
-      image = "public.ecr.aws/docker/library/busybox:1.38.0"
+      name      = "api-gateway"
+      image     = "public.ecr.aws/docker/library/busybox:1.38.0"
+      essential = true
       portMappings = [
         {
           containerPort = 80
