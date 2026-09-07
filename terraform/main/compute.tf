@@ -137,6 +137,18 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
           protocol      = "tcp"
         }
       ]
+      secrets = [
+        {
+          name      = "DATABASE_URL"
+          valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
+        }
+      ]
+      environment = [
+        {
+          name  = "S3_BUCKET"
+          value = "http://vulnerability-scanner.cloud-platform-kit.local:8081"
+        }
+      ]
     }
   ]
 }
