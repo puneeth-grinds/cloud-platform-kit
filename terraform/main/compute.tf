@@ -18,3 +18,14 @@ resource "aws_alb_target_group" "api_alb_target" {
     matcher = "200"
   }
 }
+
+resource "aws_lb_listener" "lb_listener" {
+  port = "8080"
+  protocol = "HTTP"
+  load_balancer_arn = aws_lb.lb.arn
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.api_alb_target.arn
+  }
+}
