@@ -29,3 +29,8 @@ resource "aws_lb_listener" "lb_listener" {
     target_group_arn = aws_alb_target_group.api_alb_target.arn
   }
 }
+
+resource "aws_ecs_cluster" "ecs_cluster" {
+  name = "cloud-platform-kit"
+  
+}
