@@ -122,7 +122,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   task_role_arn            = aws_iam_role.vulnerability_scanner_task.arn
 
   container_definitions = jsondecode([
-        {
+    {
       name      = "vulnerability-scanner"
       image     = "public.ecr.aws/docker/library/busybox:1.38.0"
       essential = true
@@ -159,5 +159,5 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
       }
     }
   ])
-  
+
 }
