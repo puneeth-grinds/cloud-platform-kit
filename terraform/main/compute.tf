@@ -131,6 +131,12 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
         "-c",
         "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8080 -h /www"
       ]
+      portMappings = [
+        {
+          containerPort = 8081
+          protocol      = "tcp"
+        }
+      ]
     }
   ]
 }
