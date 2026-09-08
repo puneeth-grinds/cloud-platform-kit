@@ -16,6 +16,12 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
+// logging to capture the status code
+type statusResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
