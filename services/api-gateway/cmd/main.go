@@ -40,14 +40,6 @@ func parseLogLevel(value string) slog.Level {
 		return slog.LevelWarn
 	case "error":
 		return slog.LevelError
-	case "DEBUG":
-		return slog.LevelDebug
-	case "INFO":
-		return slog.LevelInfo
-	case "WARN":
-		return slog.LevelWarn
-	case "ERROR":
-		return slog.LevelError
 	default:
 		return slog.LevelInfo
 	}
