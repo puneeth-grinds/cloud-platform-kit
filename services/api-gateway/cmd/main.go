@@ -58,9 +58,9 @@ func main() {
 
 	logger.Info(
 		"config loaded successfully",
-		"Port:", cfg.Port,
-		"log_level:", cfg.LogLevel,
-		"scanner_url:", cfg.ScannerURL,
+		"Port", cfg.Port,
+		"log_level", cfg.LogLevel,
+		"scanner_url", cfg.ScannerURL,
 	)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", healthHandler)
@@ -77,6 +77,6 @@ func main() {
 		"service:", "api-gateway",
 	)
 	if err := server.ListenAndServe(); err != nil {
-		logger.Error("server failed to start, port already in use")
+		logger.Error("server failed to start, port already in use", err)
 	}
 }
