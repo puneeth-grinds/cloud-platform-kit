@@ -22,6 +22,11 @@ type statusResponseWriter struct {
 	statusCode int
 }
 
+func (sw *statusResponseWriter) WriteHeader(statusCode int) {
+	sw.statusCode = statusCode
+	sw.ResponseWriter.WriteHeader(statusCode)
+}
+
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
