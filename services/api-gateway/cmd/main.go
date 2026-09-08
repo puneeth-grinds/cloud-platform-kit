@@ -30,6 +30,7 @@ func (sw *statusResponseWriter) WriteHeader(statusCode int) {
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		duration := time.Since(start)
 
 		wrappedWriter := &statusResponseWriter{
 			ResponseWriter: w,
@@ -38,7 +39,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(wrappedWriter, r)
 
-		slog.Info(
+		slog.Info("incoming request",
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),
 			slog.Int("status", wrappedWriter.statusCode),
