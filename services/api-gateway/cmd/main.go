@@ -10,8 +10,14 @@ type HealthResponse struct {
 }
 
 func main() {
+	// Load configs
 	_, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", healthHandler)
+	http.ListenAndServe(":8080", mux)
+
 }
