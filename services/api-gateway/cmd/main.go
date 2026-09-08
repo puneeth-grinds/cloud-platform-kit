@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 )
@@ -33,8 +34,12 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", healthHandler)
-	if err := http.ListenAndServe(":"+cfg.Port, mux); err != nil {
-		panic(err)
+	server := http.Server{
+		Addr:         ":" + cfg.Port,
+		Handler:      mux,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
-
+	server.ListenAndServe()
 }
