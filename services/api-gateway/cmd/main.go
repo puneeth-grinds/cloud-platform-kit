@@ -74,4 +74,9 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
+	logger.Info(
+		"server started successfully",
+		"addr:", server.Addr,
+		"service:", "api-gateway",
+	)
 }
