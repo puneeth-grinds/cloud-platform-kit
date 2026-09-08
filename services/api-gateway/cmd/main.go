@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
@@ -28,12 +29,16 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// slog logging
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
 	// Load configs
 	cfg, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
-
+	logger.Info("config loaded successfully")
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", healthHandler)
 	server := http.Server{
