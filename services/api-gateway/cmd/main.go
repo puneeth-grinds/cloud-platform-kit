@@ -27,6 +27,27 @@ func (sw *statusResponseWriter) WriteHeader(statusCode int) {
 	sw.ResponseWriter.WriteHeader(statusCode)
 }
 
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		wrappedWriter := &statusResponseWriter{
+			ResponseWriter: w,
+			statusCode:     http.StatusOK,
+		}
+
+		next.ServeHTTP(wrappedWriter, r)
+
+		slog.Info(
+			slog.String("method", r.Method),
+			slog.String("path", r.URL.Path),
+			slog.Int("status", wrappedWriter.statusCode),
+			slog.Duration("duration", duration),
+		)
+
+	})
+}
+
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
