@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"time"
-	"log/slog"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 )
@@ -26,6 +26,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
+
 func main() {
 	// Load configs
 	cfg, err := config.Load()
