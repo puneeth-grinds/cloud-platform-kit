@@ -29,15 +29,17 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// slog logging
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
-	}))
 	// Load configs
 	cfg, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
+
+	// slog logging
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+
 	logger.Info("config loaded successfully")
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", healthHandler)
