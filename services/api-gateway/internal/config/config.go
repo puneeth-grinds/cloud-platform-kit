@@ -3,8 +3,6 @@ package config
 import (
 	"errors"
 	"os"
-
-	"golang.org/x/tools/go/cfg"
 )
 
 type Config struct {
