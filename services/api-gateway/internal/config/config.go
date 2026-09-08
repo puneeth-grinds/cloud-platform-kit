@@ -29,4 +29,10 @@ func Load ()(Config, error){
 		ScannerURL: os.Getenv("SCANNER_URL"),
 		APIKey: os.Getenv("API_KEY")
 	}
+	if cfg.ScannerURL == ""{
+		return Config{}, errors.New("SCANNER_URL is required")
+	}
+	if cfg.APIKey == ""{
+		return Config{}, errors.New("API_KEY is required")
+	}
 }
