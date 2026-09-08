@@ -29,9 +29,8 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func parseLogLevel(value string) slog.Level {
-	level := value
 
-	switch strings.ToLower(level) {
+	switch strings.ToLower(value) {
 	case "debug":
 		return slog.LevelDebug
 	case "info":
