@@ -10,6 +10,11 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+}
 func main() {
 	// Load configs
 	_, err := config.Load()
@@ -19,6 +24,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
-	http.ListenAndServe(":8080", mux)
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		panic(err)
+	}
 
 }
