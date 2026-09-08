@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"net/http"
+
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"golang.org/x/tools/go/cfg"
 )
 
 type HealthResponse struct {
@@ -31,8 +33,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", healthHandler)
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	mux.HandleFunc("GET/health", healthHandler)
+	if err := http.ListenAndServe(cfg.Port, mux); err != nil {
 		panic(err)
 	}
 
