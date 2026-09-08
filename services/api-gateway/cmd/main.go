@@ -77,6 +77,6 @@ func main() {
 		"service", "api-gateway",
 	)
 	if err := server.ListenAndServe(); err != nil {
-		logger.Error("server failed to start","error", err)
+		logger.Error("server failed to start", "error", err)
 	}
 }
