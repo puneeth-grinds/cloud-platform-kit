@@ -71,12 +71,12 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
-		panic(err)
-	}
 	logger.Info(
 		"server started successfully",
 		"addr:", server.Addr,
 		"service:", "api-gateway",
 	)
+	if err := server.ListenAndServe(); err != nil {
+		logger.Error("server failed to start, port already in use")
+	}
 }
