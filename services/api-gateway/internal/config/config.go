@@ -20,17 +20,17 @@ func getEnv(key, fallback string) string {
 	return value
 }
 
-func Load ()(Config, error){
+func Load() (Config, error) {
 	cfg := Config{
-		Port: getEnv("PORT", "8080"),
-		LogLevel: getEnv("LOG_LEVEL", "info"),
+		Port:       getEnv("PORT", "8080"),
+		LogLevel:   getEnv("LOG_LEVEL", "info"),
 		ScannerURL: os.Getenv("SCANNER_URL"),
-		APIKey: os.Getenv("API_KEY"),
+		APIKey:     os.Getenv("API_KEY"),
 	}
-	if cfg.ScannerURL == ""{
+	if cfg.ScannerURL == "" {
 		return Config{}, errors.New("SCANNER_URL is required")
 	}
-	if cfg.APIKey == ""{
+	if cfg.APIKey == "" {
 		return Config{}, errors.New("API_KEY is required")
 	}
 	return cfg, nil
