@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
-	"golang.org/x/tools/go/cfg"
 )
 
 type HealthResponse struct {
@@ -27,7 +26,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 func main() {
 	// Load configs
-	_, err := config.Load()
+	cfg, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
