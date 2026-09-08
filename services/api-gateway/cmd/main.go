@@ -58,7 +58,7 @@ func main() {
 
 	logger.Info(
 		"config loaded successfully",
-		"Port", cfg.Port,
+		"port", cfg.Port,
 		"log_level", cfg.LogLevel,
 		"scanner_url", cfg.ScannerURL,
 	)
@@ -72,11 +72,11 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 	logger.Info(
-		"server starting....",
+		"server starting",
 		"addr", server.Addr,
 		"service", "api-gateway",
 	)
 	if err := server.ListenAndServe(); err != nil {
-		logger.Error("error", err)
+		logger.Error("server failed to start","error", err)
 	}
 }
