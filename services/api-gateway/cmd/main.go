@@ -32,7 +32,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET/health", healthHandler)
+	mux.HandleFunc("GET /health", healthHandler)
 	if err := http.ListenAndServe(":"+cfg.Port, mux); err != nil {
 		panic(err)
 	}
