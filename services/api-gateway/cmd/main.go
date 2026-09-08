@@ -6,7 +6,8 @@ import (
 )
 
 type HealthResponse struct {
-	Status string `json:"status"`
+	Status  string `json:"status"`
+	Service string `json:"service"`
 }
 
 func main() {
