@@ -61,7 +61,7 @@ func main() {
 
 	// slog logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
+		Level: parseLogLevel(cfg.LogLevel),
 	}))
 
 	logger.Info("config loaded successfully")
