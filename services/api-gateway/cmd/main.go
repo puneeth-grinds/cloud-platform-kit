@@ -56,7 +56,12 @@ func main() {
 		Level: parseLogLevel(cfg.LogLevel),
 	}))
 
-	logger.Info("config loaded successfully")
+	logger.Info(
+		"config loaded successfully",
+		"Port:", cfg.Port,
+		"log_level:", cfg.LogLevel,
+		"scanner_url:", cfg.ScannerURL,
+	)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", healthHandler)
 	server := http.Server{
