@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
@@ -30,7 +31,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 func parseLogLevel(value string) slog.Level {
 	level := value
 
-	switch level {
+	switch strings.ToLower(level) {
 	case "debug":
 		return slog.LevelDebug
 	case "info":
