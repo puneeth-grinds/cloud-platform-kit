@@ -16,7 +16,8 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
-// logging to capture the status code
+// statusResponseWriter wraps the real response writer so middleware can record
+// the status code written by the handler.
 type statusResponseWriter struct {
 	http.ResponseWriter
 	statusCode int
@@ -32,6 +33,8 @@ func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 
+			// Default to 200 because Go sends that status when a handler writes
+			// a body without explicitly calling WriteHeader.
 			wrappedWriter := &statusResponseWriter{
 				ResponseWriter: w,
 				statusCode:     http.StatusOK,
@@ -47,6 +50,9 @@ func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 		})
 	}
 }
+
+// healthHandler is used by local checks and the load balancer to confirm that
+// the api-gateway process is running.
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -59,6 +65,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
+
+// parseLogLevel converts the LOG_LEVEL string from config into slog's typed
+// log level value.
 func parseLogLevel(value string) slog.Level {
 
 	switch strings.ToLower(value) {
@@ -76,13 +85,14 @@ func parseLogLevel(value string) slog.Level {
 
 }
 func main() {
-	// Load configs
+	// Load config before starting the server so missing required environment
+	// variables fail fast.
 	cfg, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
 
-	// slog logging
+	// Use JSON logs so ECS and CloudWatch receive structured fields.
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: parseLogLevel(cfg.LogLevel),
 	}))
