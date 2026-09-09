@@ -27,28 +27,26 @@ func (sw *statusResponseWriter) WriteHeader(statusCode int) {
 	sw.ResponseWriter.WriteHeader(statusCode)
 }
 
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		duration := time.Since(start)
+func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
 
-		wrappedWriter := &statusResponseWriter{
-			ResponseWriter: w,
-			statusCode:     http.StatusOK,
-		}
+			wrappedWriter := &statusResponseWriter{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
+			}
+			next.ServeHTTP(wrappedWriter, r)
 
-		next.ServeHTTP(wrappedWriter, r)
-
-		slog.Info("incoming request",
-			slog.String("method", r.Method),
-			slog.String("path", r.URL.Path),
-			slog.Int("status", wrappedWriter.statusCode),
-			slog.Duration("duration", duration),
-		)
-
-	})
+			logger.Info("HTTP Request",
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.Path),
+				slog.Int("status", wrappedWriter.statusCode),
+				slog.Duration("duration", time.Since(start)),
+			)
+		})
+	}
 }
-
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -95,11 +93,15 @@ func main() {
 		"log_level", cfg.LogLevel,
 		"scanner_url", cfg.ScannerURL,
 	)
+
 	mux := http.NewServeMux()
+
+	wrappedmux := loggingMiddleware(logger)(mux)
+
 	mux.HandleFunc("GET /health", healthHandler)
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      mux,
+		Handler:      wrappedmux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
