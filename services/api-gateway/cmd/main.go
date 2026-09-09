@@ -130,7 +130,7 @@ func main() {
 			"addr", server.Addr,
 			"service", "api-gateway",
 		)
-		if err := server.ListenAndServe(); err != nil {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Error("server failed to start", "error", err)
 			os.Exit(1)
 		}
