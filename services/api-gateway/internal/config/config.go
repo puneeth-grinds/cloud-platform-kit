@@ -12,6 +12,7 @@ type Config struct {
 	APIKey     string
 }
 
+// getEnv reads optional environment variables that have safe defaults.
 func getEnv(key, fallback string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -20,6 +21,8 @@ func getEnv(key, fallback string) string {
 	return value
 }
 
+// Load builds the application config from environment variables and fails fast
+// when required values are missing.
 func Load() (Config, error) {
 	cfg := Config{
 		Port:       getEnv("PORT", "8080"),

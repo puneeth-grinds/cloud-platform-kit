@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
@@ -16,7 +19,8 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
-// logging to capture the status code
+// statusResponseWriter wraps the real response writer so middleware can record
+// the status code written by the handler.
 type statusResponseWriter struct {
 	http.ResponseWriter
 	statusCode int
@@ -27,28 +31,31 @@ func (sw *statusResponseWriter) WriteHeader(statusCode int) {
 	sw.ResponseWriter.WriteHeader(statusCode)
 }
 
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		duration := time.Since(start)
+func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
 
-		wrappedWriter := &statusResponseWriter{
-			ResponseWriter: w,
-			statusCode:     http.StatusOK,
-		}
+			// Default to 200 because Go sends that status when a handler writes
+			// a body without explicitly calling WriteHeader.
+			wrappedWriter := &statusResponseWriter{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
+			}
+			next.ServeHTTP(wrappedWriter, r)
 
-		next.ServeHTTP(wrappedWriter, r)
-
-		slog.Info("incoming request",
-			slog.String("method", r.Method),
-			slog.String("path", r.URL.Path),
-			slog.Int("status", wrappedWriter.statusCode),
-			slog.Duration("duration", duration),
-		)
-
-	})
+			logger.Info("HTTP Request",
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.Path),
+				slog.Int("status", wrappedWriter.statusCode),
+				slog.Duration("duration", time.Since(start)),
+			)
+		})
+	}
 }
 
+// healthHandler is used by local checks and the load balancer to confirm that
+// the api-gateway process is running.
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -61,6 +68,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
+
+// parseLogLevel converts the LOG_LEVEL string from config into slog's typed
+// log level value.
 func parseLogLevel(value string) slog.Level {
 
 	switch strings.ToLower(value) {
@@ -78,13 +88,17 @@ func parseLogLevel(value string) slog.Level {
 
 }
 func main() {
-	// Load configs
+	// create context that listens for the SIGNINT signal
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	// Load config before starting the server so missing required environment
+	// variables fail fast.
 	cfg, err := config.Load()
 	if err != nil {
 		panic(err)
 	}
 
-	// slog logging
+	// Use JSON logs so ECS and CloudWatch receive structured fields.
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: parseLogLevel(cfg.LogLevel),
 	}))
@@ -95,21 +109,41 @@ func main() {
 		"log_level", cfg.LogLevel,
 		"scanner_url", cfg.ScannerURL,
 	)
+
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("GET /health", healthHandler)
+
+	wrappedMux := loggingMiddleware(logger)(mux)
+
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      mux,
+		Handler:      wrappedMux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
-	logger.Info(
-		"server starting",
-		"addr", server.Addr,
-		"service", "api-gateway",
-	)
-	if err := server.ListenAndServe(); err != nil {
-		logger.Error("server failed to start", "error", err)
+
+	go func() {
+		logger.Info(
+			"server starting",
+			"addr", server.Addr,
+			"service", "api-gateway",
+		)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Error("server failed to start", "error", err)
+			os.Exit(1)
+		}
+	}()
+	<-ctx.Done()
+	logger.Info("server is shutting down gracefully")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		logger.Error("error shutting failed", "error", err)
+	} else {
+		logger.Info("server shutdown complete")
 	}
+
 }
