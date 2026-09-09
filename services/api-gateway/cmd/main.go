@@ -136,12 +136,12 @@ func main() {
 		}
 	}()
 	<-ctx.Done()
-	logger.Info("server is shutdowning gracefully")
+	logger.Info("server is shutting down gracefully")
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		logger.Error("error shutting down gracefully", "error", err)
+		logger.Error("error shutting failed", "error", err)
 	} else {
 		logger.Info("server shutdown complete")
 	}
