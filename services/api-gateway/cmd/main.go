@@ -96,12 +96,13 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	wrappedmux := loggingMiddleware(logger)(mux)
-
 	mux.HandleFunc("GET /health", healthHandler)
+
+	wrappedMux := loggingMiddleware(logger)(mux)
+
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      wrappedmux,
+		Handler:      wrappedMux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
