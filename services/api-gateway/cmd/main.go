@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
@@ -85,6 +88,9 @@ func parseLogLevel(value string) slog.Level {
 
 }
 func main() {
+	// create context that listens for the SIGNINT signal
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 	// Load config before starting the server so missing required environment
 	// variables fail fast.
 	cfg, err := config.Load()
@@ -117,12 +123,22 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
-	logger.Info(
-		"server starting",
-		"addr", server.Addr,
-		"service", "api-gateway",
-	)
-	if err := server.ListenAndServe(); err != nil {
-		logger.Error("server failed to start", "error", err)
-	}
+
+	go func() {
+		logger.Info(
+			"server starting",
+			"addr", server.Addr,
+			"service", "api-gateway",
+		)
+		if err := server.ListenAndServe(); err != nil {
+			logger.Error("server failed to start", "error", err)
+			os.Exit(1)
+		}
+	}()
+	<-ctx.Done()
+	logger.Info("server is shutdowning gracefully")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	server.Shutdown(shutdownCtx)
 }
