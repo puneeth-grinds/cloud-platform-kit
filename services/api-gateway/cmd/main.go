@@ -75,7 +75,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func scanHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	response := ScanResponse{
@@ -129,6 +129,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", healthHandler)
+	mux.HandleFunc("GET /scan", scanHandler )
 
 	wrappedMux := loggingMiddleware(logger)(mux)
 
