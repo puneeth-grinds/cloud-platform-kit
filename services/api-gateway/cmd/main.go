@@ -164,7 +164,7 @@ func main() {
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		logger.Error("error shutdown failed", "error", err)
 	} else {
-		logger.Info("server shutdown complete")
+		logger.Error("server shutdown complete","error",err)
 	}
 
 }
