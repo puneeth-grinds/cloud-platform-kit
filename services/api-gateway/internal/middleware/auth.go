@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/json"
 	"net/http"
-	"crypto/subtle"
-	"crypto/sha256"
 )
 
 type APIError struct {
@@ -20,7 +20,7 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 			expectedHash := sha256.Sum256([]byte(APIKey))
 			inputHash := sha256.Sum256([]byte(apiKey))
 
-			match := subtle.ConstantTimeCompare(expectedHash[:],inputHash[:])
+			match := subtle.ConstantTimeCompare(expectedHash[:], inputHash[:])
 
 			if apiKey == "" || match != 1 {
 				w.Header().Set("Content-Type", "application/json")
