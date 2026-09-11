@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 )
 
 type HealthResponse struct {
@@ -132,6 +133,7 @@ func main() {
 	mux.HandleFunc("GET /scan", scanHandler )
 
 	wrappedMux := loggingMiddleware(logger)(mux)
+	protectedMux := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
 
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
