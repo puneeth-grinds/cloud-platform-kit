@@ -19,6 +19,11 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
+type ScanResponse struct {
+	Status  string `json:"status"`
+	Service string `json:"service"`
+}
+
 // statusResponseWriter wraps the real response writer so middleware can record
 // the status code written by the handler.
 type statusResponseWriter struct {
