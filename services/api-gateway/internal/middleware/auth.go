@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"net/http"
+	"crypto/subtle"
 )
 
 type APIError struct {
