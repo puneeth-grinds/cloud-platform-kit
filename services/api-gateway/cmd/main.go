@@ -131,11 +131,11 @@ func main() {
 
 	mux.HandleFunc("GET /health", healthHandler)
 
-	wrappedMux := loggingMiddleware(logger)(mux)
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
-	
+
 	mux.Handle("GET /scan", protectedScanHandler)
 
+	wrappedMux := loggingMiddleware(logger)(mux)
 
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
