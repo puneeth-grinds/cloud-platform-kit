@@ -134,7 +134,7 @@ func main() {
 	wrappedMux := loggingMiddleware(logger)(mux)
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
 	
-	
+	mux.Handle("GET /scan", protectedScanHandler)
 
 
 	server := http.Server{
