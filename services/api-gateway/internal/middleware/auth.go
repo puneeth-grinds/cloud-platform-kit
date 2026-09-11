@@ -24,7 +24,9 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 					Code:  http.StatusUnauthorized,
 				}
 				json.NewEncoder(w).Encode(apiError)
+				return
 			}
+			return next.ServeHTTP(w, r)
 
 		})
 	}
