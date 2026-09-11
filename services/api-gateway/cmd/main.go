@@ -74,6 +74,17 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func scanHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	response := ScanResponse{
+		Status:  "accepted",
+		Service: "api-gateway",
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
 // log level value.
 func parseLogLevel(value string) slog.Level {
