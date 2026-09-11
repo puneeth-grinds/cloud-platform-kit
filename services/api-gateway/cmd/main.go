@@ -130,10 +130,12 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", healthHandler)
-	mux.HandleFunc("GET /scan", scanHandler )
 
 	wrappedMux := loggingMiddleware(logger)(mux)
-	protectedMux := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
+	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
+	
+	
+
 
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
