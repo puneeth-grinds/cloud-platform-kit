@@ -12,9 +12,15 @@ import (
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 )
 
 type HealthResponse struct {
+	Status  string `json:"status"`
+	Service string `json:"service"`
+}
+
+type ScanResponse struct {
 	Status  string `json:"status"`
 	Service string `json:"service"`
 }
@@ -69,6 +75,17 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func scanHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	response := ScanResponse{
+		Status:  "accepted",
+		Service: "api-gateway",
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
 // log level value.
 func parseLogLevel(value string) slog.Level {
@@ -114,6 +131,10 @@ func main() {
 
 	mux.HandleFunc("GET /health", healthHandler)
 
+	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
+
+	mux.Handle("GET /scan", protectedScanHandler)
+
 	wrappedMux := loggingMiddleware(logger)(mux)
 
 	server := http.Server{
@@ -141,9 +162,9 @@ func main() {
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		logger.Error("error shutting failed", "error", err)
+		logger.Error("error shutdown failed", "error", err)
 	} else {
-		logger.Info("server shutdown complete")
+		logger.Error("server shutdown complete","error",err)
 	}
 
 }
