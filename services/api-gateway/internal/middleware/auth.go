@@ -26,7 +26,7 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 				json.NewEncoder(w).Encode(apiError)
 				return
 			}
-			return next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r)
 
 		})
 	}
