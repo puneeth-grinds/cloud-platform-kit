@@ -125,13 +125,17 @@ func main() {
 		"port", cfg.Port,
 		"log_level", cfg.LogLevel,
 		"scanner_url", cfg.ScannerURL,
+		"ratelimitrpm", cfg.RateLimitRPM,
 	)
+	rateLimiter := middleware.NewRateLimiter(cfg.RateLimitRPM)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", healthHandler)
 
-	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(http.HandlerFunc(scanHandler))
+	rateLimitedScanHandler := rateLimiter.Middleware(http.HandlerFunc(scanHandler))
+
+	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(rateLimitedScanHandler)
 
 	mux.Handle("GET /scan", protectedScanHandler)
 
