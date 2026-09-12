@@ -162,9 +162,9 @@ func main() {
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		logger.Error("error shutdown failed", "error", err)
+		logger.Error("server shutdown failed", "error", err)
 	} else {
-		logger.Error("server shutdown complete","error",err)
+		logger.Info("server shutdown complete")
 	}
 
 }
