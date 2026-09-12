@@ -53,8 +53,8 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			retryAfter := windowEndsat.Sub(now)
 			retryAfterSec := retryAfter.Seconds()
 
-			if retryAfterSec <= 0 {
-				retryAfterSec = 0
+			if retryAfterSec <= 1 {
+				retryAfterSec = 1
 			}
 			w.Header().Set("Retry-After", strconv.Itoa(int(retryAfterSec)))
 			w.WriteHeader(http.StatusTooManyRequests)
