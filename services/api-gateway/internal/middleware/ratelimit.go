@@ -11,6 +11,7 @@ import (
 type rateLimitingEntry struct {
 	Count       int
 	WindowStart time.Time
+	mu          sync.Mutex
 }
 
 type RateLimiter struct {
