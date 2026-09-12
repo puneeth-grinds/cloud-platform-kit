@@ -43,7 +43,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			entry.Count++
 		}
 
-		if entry.Count > rl.rate{
+		if entry.Count > rl.rate {
 			http.Error(w, "Too many requests", http.StatusTooManyRequests)
 			return
 		} else {
