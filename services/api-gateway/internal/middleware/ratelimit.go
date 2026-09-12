@@ -36,13 +36,12 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		actual, loaded := rl.requests.LoadOrStore(apiKey, entry)
 		entry = actual.(*rateLimitingEntry)
 
-		if loaded{
-			if now.Sub(entry.WindowStart) > rl.per{
+		if loaded {
+			if now.Sub(entry.WindowStart) > rl.per {
 				entry.Count = 1
 				entry.WindowStart = now
 			}
 		}
-
 
 		if entry.Count > rl.rate {
 			http.Error(w, "Too many requests", http.StatusTooManyRequests)
