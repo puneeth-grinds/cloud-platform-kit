@@ -27,7 +27,6 @@ func NewRateLimiter(rate int) *RateLimiter {
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-API-Key")
-		next.ServeHTTP(w, r)
 
 		val, found := rl.requests.Load(apiKey)
 
@@ -37,6 +36,8 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 				WindowStart: time.Now(),
 			}
 		}
+		next.ServeHTTP(w, r)
+
 	})
 
 }
