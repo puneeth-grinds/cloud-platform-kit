@@ -39,7 +39,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		if now.Sub(entry.WindowStart) >= rl.per {
 			entry.Count = 1
 			entry.WindowStart = now
-		}else{
+		} else {
 			entry.Count++
 		}
 
