@@ -10,8 +10,8 @@ type rateLimitingEntry struct {
 	WindowStart time.Time
 }
 
-type RateLimiter struct{
+type RateLimiter struct {
 	requests sync.Map
-	rate int //maximum requests allowed
-	per time.Duration 
+	rate     int           //maximum requests allowed
+	per      time.Duration // time window eg: 1 min
 }
