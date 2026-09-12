@@ -16,7 +16,7 @@ type RateLimiter struct {
 	per      time.Duration // time window eg: 1 min
 }
 
-func NewRateLimiter(rate int, per time.Duration) *RateLimiter {
+func NewRateLimiter(rate int) *RateLimiter {
 	return &RateLimiter{
 		rate: rate,
 		per:  per,
