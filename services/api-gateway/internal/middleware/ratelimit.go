@@ -55,9 +55,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 				Code:  http.StatusTooManyRequests,
 			}
 			json.NewEncoder(w).Encode(apiError)
-		} else {
-			next.ServeHTTP(w, r)
+			return 
 		}
+		next.ServeHTTP(w,r)
 
 	})
 
