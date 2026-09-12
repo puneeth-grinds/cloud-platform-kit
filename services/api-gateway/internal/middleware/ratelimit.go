@@ -19,6 +19,5 @@ type RateLimiter struct {
 func NewRateLimiter(rate int) *RateLimiter {
 	return &RateLimiter{
 		rate: rate,
-		per:  per,
 	}
 }
