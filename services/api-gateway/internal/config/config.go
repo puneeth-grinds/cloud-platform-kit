@@ -42,6 +42,7 @@ func Load() (Config, error) {
 		LogLevel:   getEnv("LOG_LEVEL", "info"),
 		ScannerURL: os.Getenv("SCANNER_URL"),
 		APIKey:     os.Getenv("API_KEY"),
+		RateLimitRPM: rateLimitRPMInt,
 	}
 
 	if rateLimitRPMInt <= 0 {
