@@ -39,7 +39,7 @@ func Load() (Config, error) {
 	}
 
 	if rateLimitRPMInt > 0 {
-		errors.New("RateLimitRPM value should be greater than 0")
+		return Config{}, errors.New("RateLimitRPM value should be greater than 0")
 	}
 
 	if cfg.ScannerURL == "" {
