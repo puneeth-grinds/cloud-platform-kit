@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"net/http"
 	"sync"
 	"time"
 )
@@ -19,5 +20,10 @@ type RateLimiter struct {
 func NewRateLimiter(rate int) *RateLimiter {
 	return &RateLimiter{
 		rate: rate,
+		per:  time.Minute,
 	}
+}
+
+func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
+
 }
