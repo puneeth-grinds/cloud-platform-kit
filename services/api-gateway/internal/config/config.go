@@ -3,13 +3,14 @@ package config
 import (
 	"errors"
 	"os"
+	"strconv"
 )
 
 type Config struct {
-	Port       string
-	LogLevel   string
-	ScannerURL string
-	APIKey     string
+	Port         string
+	LogLevel     string
+	ScannerURL   string
+	APIKey       string
 	RateLimitRPM string
 }
 
@@ -26,13 +27,21 @@ func getEnv(key, fallback string) string {
 // when required values are missing.
 func Load() (Config, error) {
 	cfg := Config{
-		Port:       getEnv("PORT", "8080"),
-		LogLevel:   getEnv("LOG_LEVEL", "info"),
-		RateLimitRPM: getEnv("RATE_LIMIT_RPM","60"),
-		ScannerURL: os.Getenv("SCANNER_URL"),
-		APIKey:     os.Getenv("API_KEY"),
-
+		Port:         getEnv("PORT", "8080"),
+		LogLevel:     getEnv("LOG_LEVEL", "info"),
+		RateLimitRPM: getEnv("RATE_LIMIT_RPM", "60"),
+		ScannerURL:   os.Getenv("SCANNER_URL"),
+		APIKey:       os.Getenv("API_KEY"),
 	}
+	rateLimitRPMInt, err := strconv.Atoi(cfg.RateLimitRPM)
+	if err != nil {
+		panic(err)
+	}
+
+	if rateLimitRPMInt > 0 {
+		errors.New("RateLimitRPM value should be greater than 0")
+	}
+
 	if cfg.ScannerURL == "" {
 		return Config{}, errors.New("SCANNER_URL is required")
 	}
