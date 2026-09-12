@@ -50,7 +50,6 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		}
 
 		if entry.Count > rl.rate {
-			entry.mu.Unlock()
 			w.Header().Set("Content-Type", "application/json")
 			windowEndsAt := entry.WindowStart.Add(rl.per)
 			retryAfter := windowEndsAt.Sub(now)
@@ -59,6 +58,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			if retryAfterSec < 1 {
 				retryAfterSec = 1
 			}
+			entry.mu.Unlock()
 
 			w.Header().Set("Retry-After", strconv.Itoa(int(retryAfterSec)))
 			w.WriteHeader(http.StatusTooManyRequests)
@@ -71,6 +71,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			return
 		}
 
+		entry.mu.Unlock()
 		next.ServeHTTP(w, r)
 
 	})
