@@ -38,15 +38,11 @@ func Load() (Config, error) {
 	}
 
 	cfg := Config{
-		Port:       getEnv("PORT", "8080"),
-		LogLevel:   getEnv("LOG_LEVEL", "info"),
-		ScannerURL: os.Getenv("SCANNER_URL"),
-		APIKey:     os.Getenv("API_KEY"),
+		Port:         getEnv("PORT", "8080"),
+		LogLevel:     getEnv("LOG_LEVEL", "info"),
+		ScannerURL:   os.Getenv("SCANNER_URL"),
+		APIKey:       os.Getenv("API_KEY"),
 		RateLimitRPM: rateLimitRPMInt,
-	}
-
-	if rateLimitRPMInt <= 0 {
-		return Config{}, errors.New("RateLimitRPM value should be greater than 0")
 	}
 
 	if cfg.ScannerURL == "" {
