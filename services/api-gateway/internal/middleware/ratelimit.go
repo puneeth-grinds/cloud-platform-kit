@@ -46,8 +46,14 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		}
 
 		if entry.Count > rl.rate {
-			http.Error(w, "Too many requests", http.StatusTooManyRequests)
-			return
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusTooManyRequests)
+
+			apiError := APIError{
+				Error: "Too Many Requests",
+				Code: http.StatusTooManyRequests,
+			}
+			
 		} else {
 			next.ServeHTTP(w, r)
 		}
