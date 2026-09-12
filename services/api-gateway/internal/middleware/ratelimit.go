@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"net/http"
 	"sync"
 	"time"
@@ -53,7 +54,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 				Error: "Too Many Requests",
 				Code: http.StatusTooManyRequests,
 			}
-			
+			json.NewEncoder(w).Encode(apiError)
 		} else {
 			next.ServeHTTP(w, r)
 		}
