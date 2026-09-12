@@ -25,5 +25,7 @@ func NewRateLimiter(rate int) *RateLimiter {
 }
 
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
-
+	return func(next http.Handler)http.Handler{
+		
+	}
 }
