@@ -33,7 +33,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 
 		if !found {
 			entry = &rateLimitingEntry{
-				Count: 0,
+				Count:       0,
 				WindowStart: time.Now(),
 			}
 		}
