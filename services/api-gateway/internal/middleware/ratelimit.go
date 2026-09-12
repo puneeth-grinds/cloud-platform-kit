@@ -33,8 +33,14 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			Count:       1,
 			WindowStart: now,
 		}
-		actual, _ := rl.requests.LoadOrStore(apiKey, entry)
+		actual, loaded := rl.requests.LoadOrStore(apiKey, entry)
 		entry = actual.(*rateLimitingEntry)
+
+		if loaded == true{
+			entry.Count++
+		} else {
+			entry.Count = 1
+		}
 
 		if now.Sub(entry.WindowStart) >= rl.per {
 			entry.Count = 1
