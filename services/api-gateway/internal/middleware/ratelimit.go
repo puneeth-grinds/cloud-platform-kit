@@ -38,6 +38,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		}
 		actual, loaded := rl.requests.LoadOrStore(apiKey, entry)
 		entry = actual.(*rateLimitingEntry)
+		entry.mu.Lock()
 
 		if loaded {
 			if now.Sub(entry.WindowStart) >= rl.per {
@@ -67,6 +68,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			json.NewEncoder(w).Encode(apiError)
 			return
 		}
+		entry.mu.Unlock()
 		next.ServeHTTP(w, r)
 
 	})
