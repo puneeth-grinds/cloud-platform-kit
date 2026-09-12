@@ -36,9 +36,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		actual, _ := rl.requests.LoadOrStore(apiKey, entry)
 		entry = actual.(*rateLimitingEntry)
 
-		if now.Sub(entry.WindowStart)>= rl.per{
+		if now.Sub(entry.WindowStart) >= rl.per {
 			http.Error(w, "Too many requests", http.StatusTooManyRequests)
-			return 
+			return
 		}
 
 		next.ServeHTTP(w, r)
