@@ -50,9 +50,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		if entry.Count > rl.rate {
 			w.Header().Set("Content-Type", "application/json")
 			windowEndsat := entry.WindowStart.Add(rl.per)
-			retryAfter := time.Until(windowEndsat)
-
-			if retryAfter <= 0 {
+			retryAfter := windowEndsat.Sub(now)
+			
+			if retryAfter <= 0{
 				retryAfter = 0
 			}
 			w.Header().Set("Retry-After", strconv.Itoa(int(retryAfter)))
