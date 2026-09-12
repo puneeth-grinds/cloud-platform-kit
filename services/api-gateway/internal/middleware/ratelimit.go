@@ -15,3 +15,10 @@ type RateLimiter struct {
 	rate     int           //maximum requests allowed
 	per      time.Duration // time window eg: 1 min
 }
+
+func NewRateLimiter(rate int, per time.Duration) *RateLimiter{
+	return &RateLimiter{
+		rate: rate,
+		per: per,
+	}
+}
