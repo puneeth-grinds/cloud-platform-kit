@@ -10,6 +10,7 @@ type Config struct {
 	LogLevel   string
 	ScannerURL string
 	APIKey     string
+	RateLimitRPM string
 }
 
 // getEnv reads optional environment variables that have safe defaults.
