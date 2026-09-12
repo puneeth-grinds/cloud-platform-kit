@@ -5,6 +5,6 @@ import (
 )
 
 type rateLimitingEntry struct {
-	Count       int       `json:"count"`
-	WindowStart time.Time `json:"windowStart"`
+	Count       int
+	WindowStart time.Time
 }
