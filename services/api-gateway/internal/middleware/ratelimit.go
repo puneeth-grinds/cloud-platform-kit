@@ -1,6 +1,9 @@
 package middleware
 
+import {
+	"time"
+}
 type rateLimitingEntry struct {
 	Count       int `json:"count"`
-	WindowStart int `json:"windowStart"`
+	WindowStart time.Time `json:"windowStart"`
 }
