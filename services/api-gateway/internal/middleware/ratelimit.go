@@ -51,11 +51,12 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			windowEndsat := entry.WindowStart.Add(rl.per)
 			retryAfter := windowEndsat.Sub(now)
+			retryAfterSec := time.Duration(retryAfter).Seconds() 
 			
 			if retryAfter <= 0{
 				retryAfter = 0
 			}
-			w.Header().Set("Retry-After", strconv.Itoa(int(retryAfter)))
+			w.Header().Set("Retry-After", strconv.Itoa(int(retryAfterSec)))
 			w.WriteHeader(http.StatusTooManyRequests)
 
 			apiError := APIError{
