@@ -28,8 +28,10 @@ func Load() (Config, error) {
 	cfg := Config{
 		Port:       getEnv("PORT", "8080"),
 		LogLevel:   getEnv("LOG_LEVEL", "info"),
+		RateLimitRPM: getEnv("RATE_LIMIT_RPM","60"),
 		ScannerURL: os.Getenv("SCANNER_URL"),
 		APIKey:     os.Getenv("API_KEY"),
+
 	}
 	if cfg.ScannerURL == "" {
 		return Config{}, errors.New("SCANNER_URL is required")
