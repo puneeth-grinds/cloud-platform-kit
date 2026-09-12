@@ -52,7 +52,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 
 			apiError := APIError{
 				Error: "Too Many Requests",
-				Code: http.StatusTooManyRequests,
+				Code:  http.StatusTooManyRequests,
 			}
 			json.NewEncoder(w).Encode(apiError)
 		} else {
