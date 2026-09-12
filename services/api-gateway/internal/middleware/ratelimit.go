@@ -29,7 +29,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		apiKey := r.Header.Get("X-API-Key")
 
 		entry := &rateLimitingEntry{
-			Count:       0,
+			Count:       1,
 			WindowStart: time.Now(),
 		}
 		actual, _ := rl.requests.LoadOrStore(apiKey, entry)
