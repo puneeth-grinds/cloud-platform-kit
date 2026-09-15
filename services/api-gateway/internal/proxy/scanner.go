@@ -1,6 +1,9 @@
 package proxy
 
 import (
+	"context"
+	"errors"
+	"io"
 	"net/http"
 	"time"
 )
@@ -19,3 +22,5 @@ func NewScannerProxy(scannerURL string) *ScannerProxy {
 	}
 	return &proxy
 }
+
+func ForwardRequest(ctx context)
