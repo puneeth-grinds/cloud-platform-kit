@@ -121,7 +121,7 @@ func main() {
 
 	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
-	scanHandler := NewScanHandler(scannerProxy)
+	scanHandler := handler.NewScanHandler(scannerProxy)
 
 	rateLimitedScanHandler := rateLimiter.Middleware(scanHandler)
 
