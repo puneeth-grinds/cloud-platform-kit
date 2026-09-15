@@ -101,22 +101,21 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 	}
 	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusGatewayTimeout)
 	if errors.Is(err, context.DeadlineExceeded) {
 		errorResponse := ErrorResponse{
 			Error: "Gateway Timeout",
 			Code:  http.StatusGatewayTimeout,
 		}
+		w.WriteHeader(http.StatusGatewayTimeout)
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusBadGateway)
 	if err != nil {
 		errorResponse := ErrorResponse{
 			Error: "Bad Gateway",
 			Code:  http.StatusBadGateway,
 		}
+		w.WriteHeader(http.StatusBadGateway)
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
