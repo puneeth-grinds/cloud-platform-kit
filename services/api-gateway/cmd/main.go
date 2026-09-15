@@ -147,7 +147,7 @@ func main() {
 
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(rateLimitedScanHandler)
 
-	mux.Handle("GET /scan", protectedScanHandler)
+	mux.Handle("POST /scan", protectedScanHandler)
 
 	wrappedMux := loggingMiddleware(logger)(mux)
 
