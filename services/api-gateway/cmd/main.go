@@ -13,6 +13,7 @@ import (
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
 )
 
 type HealthResponse struct {
@@ -138,6 +139,8 @@ func main() {
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(rateLimitedScanHandler)
 
 	mux.Handle("GET /scan", protectedScanHandler)
+
+	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
 	wrappedMux := loggingMiddleware(logger)(mux)
 
