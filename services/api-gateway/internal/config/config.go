@@ -8,13 +8,13 @@ import (
 
 type Config struct {
 	// Port is the HTTP port the api-gateway listens on.
-	Port         string
+	Port string
 	// LogLevel controls how much detail slog writes.
-	LogLevel     string
+	LogLevel string
 	// ScannerURL is the base URL for the vulnerability-scanner service.
-	ScannerURL   string
+	ScannerURL string
 	// APIKey is the shared secret expected in the X-API-Key header.
-	APIKey       string
+	APIKey string
 	// RateLimitRPM is the max requests per minute allowed per API key.
 	RateLimitRPM int
 }
