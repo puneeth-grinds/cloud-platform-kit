@@ -59,7 +59,7 @@ func (p *ScannerProxy, ) Forward(ctx context.Context, body io.Reader, contentTyp
 		ctx,
 		"scanner request complete",
 		"status", resp.StatusCode,
-		"duration", slog.Duration()
+		"duration", duration,
 	)
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
