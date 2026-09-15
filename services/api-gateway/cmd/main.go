@@ -92,15 +92,13 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 	if !strings.HasPrefix(contentType, "application/json") {
 		errorResponse := ErrorResponse{
 			Error: "content type must be application/json",
-			code:  http.StatusUnsupportedMediaType,
+			Code:  http.StatusUnsupportedMediaType,
 		}
+		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
 	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
 	if errors.Is(err, context.DeadlineExceeded) {
-		errorResponse := ErrorResponse{
-			Error: "",
-		}
 		return
 	}
 	if err != nil {
