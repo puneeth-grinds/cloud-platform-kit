@@ -1,13 +1,15 @@
 package handler
-import(
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
-	"errors"
-	"encoding/json"
-	"context"
-	
+
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
 )
+
 type ErrorResponse struct {
 	Error string `json:"error"`
 	Code  int    `json:"code"`
