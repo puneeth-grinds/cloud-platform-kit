@@ -27,6 +27,11 @@ type ScanResponse struct {
 	Service string `json:"service"`
 }
 
+type ErrorResponse struct {
+	Error string `json:"error"`
+	Code  int    `json:"code"`
+}
+
 // statusResponseWriter wraps the real response writer so middleware can record
 // the status code written by the handler.
 type statusResponseWriter struct {
