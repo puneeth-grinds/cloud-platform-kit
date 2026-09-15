@@ -12,4 +12,9 @@ type ScannerProxy struct {
 
 func NewProxyService(scannerURL string) *ScannerProxy {
 	httpClient := http.Client{Timeout: 30 * time.Second}
+
+	proxy :=ScannerProxy{
+		baseURL: scannerURL,
+		client: &httpClient,
+	}
 }
