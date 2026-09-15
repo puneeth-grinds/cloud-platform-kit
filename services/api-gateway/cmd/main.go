@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/handler"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
-	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/cmd/handler"
 )
 
 type HealthResponse struct {
@@ -71,7 +71,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
-
 
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
 // log level value.
