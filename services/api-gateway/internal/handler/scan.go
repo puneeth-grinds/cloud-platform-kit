@@ -15,6 +15,8 @@ type ErrorResponse struct {
 	Code  int    `json:"code"`
 }
 
+// NewScanHandler creates the /scan HTTP handler and injects the scanner proxy
+// dependency it needs to forward requests.
 func NewScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		scanHandler(w, r, scannerProxy)
@@ -22,6 +24,7 @@ func NewScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 }
 
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
+	// Only JSON scan requests are accepted because the scanner expects JSON.
 	contentType := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(contentType, "application/json") {
 		w.Header().Set("Content-Type", "application/json")
@@ -33,8 +36,12 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
+
+	// Forward the original request body to the vulnerability-scanner and return
+	// the scanner response back to the caller.
 	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
 	w.Header().Set("Content-Type", "application/json")
+
 	if errors.Is(err, context.DeadlineExceeded) {
 		errorResponse := ErrorResponse{
 			Error: "Gateway Timeout",
@@ -44,6 +51,7 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
+
 	if err != nil {
 		errorResponse := ErrorResponse{
 			Error: "Bad Gateway",
@@ -53,7 +61,7 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
+
 	w.WriteHeader(statusCode)
 	w.Write(respBytes)
-
 }

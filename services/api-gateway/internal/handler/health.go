@@ -10,6 +10,8 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
+// HealthHandler returns a simple JSON response used by humans, local curl
+// checks, and load balancer health checks.
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -20,5 +22,4 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
-
 }

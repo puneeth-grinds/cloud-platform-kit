@@ -11,11 +11,13 @@ type statusResponseWriter struct {
 	statusCode int
 }
 
+// WriteHeader records the response status before passing it to the real writer.
 func (sw *statusResponseWriter) WriteHeader(statusCode int) {
 	sw.statusCode = statusCode
 	sw.ResponseWriter.WriteHeader(statusCode)
 }
 
+// LoggingMiddleware records one structured log line for every HTTP request.
 func LoggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
