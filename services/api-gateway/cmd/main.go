@@ -17,7 +17,6 @@ import (
 )
 
 func parseLogLevel(value string) slog.Level {
-
 	switch strings.ToLower(value) {
 	case "debug":
 		return slog.LevelDebug
@@ -30,12 +29,14 @@ func parseLogLevel(value string) slog.Level {
 	default:
 		return slog.LevelInfo
 	}
-
 }
+
 func main() {
-	// create context that listens for the SIGNNT signal
+	// Create a root context that is cancelled when the process receives
+	// SIGINT or SIGTERM. This is what triggers graceful shutdown.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
+
 	// Load config before starting the server so missing required environment
 	// variables fail fast.
 	cfg, err := config.Load()
@@ -59,18 +60,20 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// Health is public because load balancers and local checks must be able to
+	// call it without an API key.
 	mux.HandleFunc("GET /health", handler.HealthHandler)
 
 	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
+	// /scan flow: auth checks the API key, rate limit checks request volume,
+	// then the handler forwards the request to the vulnerability-scanner.
 	scanHandler := handler.NewScanHandler(scannerProxy)
-
 	rateLimitedScanHandler := rateLimiter.Middleware(scanHandler)
-
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(rateLimitedScanHandler)
-
 	mux.Handle("POST /scan", protectedScanHandler)
 
+	// Logging wraps the whole mux so every route gets one structured request log.
 	wrappedMux := middleware.LoggingMiddleware(logger)(mux)
 
 	server := http.Server{
@@ -92,8 +95,10 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+
 	<-ctx.Done()
 	logger.Info("server is shutting down gracefully")
+
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -102,5 +107,4 @@ func main() {
 	} else {
 		logger.Info("server shutdown complete")
 	}
-
 }
