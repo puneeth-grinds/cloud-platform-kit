@@ -6,5 +6,5 @@ import (
 
 type ScannerProxy struct {
 	baseURL    string 
-	httpClient *http.Client
+	client *http.Client
 }
