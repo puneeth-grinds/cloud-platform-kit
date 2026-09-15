@@ -5,6 +5,6 @@ import (
 )
 
 type ScannerProxy struct {
-	baseURL    string `json:"baseurl"`
+	baseURL    string 
 	httpClient *http.Client
 }
