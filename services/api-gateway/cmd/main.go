@@ -89,11 +89,12 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
 	}
 	bodyString := string(bodyBytes)
+	body := strings.NewReader(bodyString)
 	if !strings.HasPrefix(contentType, "application/json") {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	scannerProxy.Forward(r.Context(), bodyString, contentType)
+	scannerProxy.Forward(r.Context(), body, contentType)
 }
 
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
