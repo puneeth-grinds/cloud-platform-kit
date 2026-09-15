@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,10 +16,6 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
 )
 
-type HealthResponse struct {
-	Status  string `json:"status"`
-	Service string `json:"service"`
-}
 
 // statusResponseWriter wraps the real response writer so middleware can record
 // the status code written by the handler.
@@ -57,23 +52,7 @@ func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 	}
 }
 
-// healthHandler is used by local checks and the load balancer to confirm that
-// the api-gateway process is running.
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 
-	response := HealthResponse{
-		Status:  "ok",
-		Service: "api-gateway",
-	}
-
-	json.NewEncoder(w).Encode(response)
-
-}
-
-// parseLogLevel converts the LOG_LEVEL string from config into slog's typed
-// log level value.
 func parseLogLevel(value string) slog.Level {
 
 	switch strings.ToLower(value) {
