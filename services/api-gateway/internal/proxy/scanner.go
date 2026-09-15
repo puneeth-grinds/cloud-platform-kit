@@ -40,11 +40,11 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded){
+		if errors.Is(err, context.DeadlineExceeded) {
 			return 0, nil, context.DeadlineExceeded
 		}
 		var netErr net.Error
-		if errors.Is(err, netErr) && netErr.Timeout(){
+		if errors.Is(err, netErr) && netErr.Timeout() {
 			return 0, nil, netErr
 		}
 		return 0, nil, err
