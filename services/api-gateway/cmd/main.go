@@ -76,11 +76,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
-func newScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		scanHandler(w, r, scannerProxy)
-	})
-}
 
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
 	contentType := r.Header.Get("Content-Type")
