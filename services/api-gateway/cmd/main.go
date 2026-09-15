@@ -71,7 +71,7 @@ func main() {
 
 	mux.Handle("POST /scan", protectedScanHandler)
 
-	wrappedMux := loggingMiddleware(logger)(mux)
+	wrappedMux := middleware.LoggingMiddleware(logger)(mux)
 
 	server := http.Server{
 		Addr:         ":" + cfg.Port,

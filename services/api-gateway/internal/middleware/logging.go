@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"log/slog"
+	"time"
 )
 
 type statusResponseWriter struct {
@@ -15,7 +16,7 @@ func (sw *statusResponseWriter) WriteHeader(statusCode int) {
 	sw.ResponseWriter.WriteHeader(statusCode)
 }
 
-func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
+func LoggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
