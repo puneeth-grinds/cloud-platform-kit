@@ -92,7 +92,7 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 	if !strings.HasPrefix(contentType, "application/json") {
 		errorResponse := ErrorResponse{
 			Error: "content type must be application/json",
-			code: http.StatusUnsupportedMediaType,
+			code:  http.StatusUnsupportedMediaType,
 		}
 		return
 	}
