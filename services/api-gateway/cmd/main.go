@@ -87,6 +87,7 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
+		return
 	}
 	bodyString := string(bodyBytes)
 	body := strings.NewReader(bodyString)
