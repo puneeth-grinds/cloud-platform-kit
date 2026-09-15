@@ -10,7 +10,7 @@ type ScannerProxy struct {
 	client  *http.Client
 }
 
-func NewProxyService(scannerURL string) *ScannerProxy {
+func NewScannerProxy(scannerURL string) *ScannerProxy {
 	httpClient := http.Client{Timeout: 30 * time.Second}
 
 	proxy := ScannerProxy{
