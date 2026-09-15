@@ -41,9 +41,15 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		return 0, nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
-	
+
 	resp, err := p.client.Do(req)
 	if err != nil {
+		p.logger.ErrorContext(
+			ctx,
+			"scanner request failed",
+			"error", err,
+			"duration", time.Since(start),
+		)
 		if errors.Is(err, context.DeadlineExceeded) {
 			return 0, nil, context.DeadlineExceeded
 		}
@@ -51,12 +57,6 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		if errors.As(err, &netErr) && netErr.Timeout() {
 			return 0, nil, context.DeadlineExceeded
 		}
-		p.logger.InfoContext(
-			"scanner request failed",
-			"error", err,
-			
-
-		)
 		return 0, nil, err
 	}
 	defer resp.Body.Close()
