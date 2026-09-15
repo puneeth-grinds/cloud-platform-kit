@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -83,11 +84,16 @@ func newScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
 	contentType := r.Header.Get("Content-Type")
-
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
+	}
+	bodyString := string(bodyBytes)
 	if !strings.HasPrefix(contentType, "application/json") {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
+	scannerProxy.Forward(r.Context(), bodyString, contentType)
 }
 
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
