@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"net/http"
+	"time"
 )
 
 type ScannerProxy struct {
@@ -9,6 +10,6 @@ type ScannerProxy struct {
 	client  *http.Client
 }
 
-func NewProxyService(baseURL ScannerProxy) *ScannerProxy {
-
+func NewProxyService(scannerURL string) *ScannerProxy {
+	httpClient := http.Client{Timeout: 30 * time.Second}
 }
