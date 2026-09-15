@@ -43,5 +43,10 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		return 0, nil, err
 	}
 	defer resp.Body.Close()
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, nil, err
+	}
+	return resp.StatusCode, responseBody, nil
 	
 }
