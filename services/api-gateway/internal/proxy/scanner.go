@@ -25,7 +25,7 @@ func NewScannerProxy(scannerURL string) *ScannerProxy {
 }
 
 func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
-	trimmedBaseURL := strings.Trim(p.baseURL, "/")
+	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
