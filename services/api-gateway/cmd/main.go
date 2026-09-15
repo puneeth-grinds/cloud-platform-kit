@@ -99,6 +99,9 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 	if err != nil {
 		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(respBytes)
 
 }
 
