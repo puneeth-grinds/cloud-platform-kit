@@ -76,40 +76,40 @@ response.
  
 ```
 cloud-platform-kit/
+├── assets/
+│   └── architecture.png
+├── docs/
+│   ├── architecture.md
+│   ├── aws-authentication.md
+│   └── terraform-state-backend.md
 ├── terraform/
-│   ├── bootstrap/          # S3 state bucket + native S3 locking (applied once)
+│   ├── state-backend/      # S3 state bucket + native S3 locking (applied once)
 │   └── main/               # All project infrastructure (VPC, ECS, RDS, ALB, etc.)
-│       ├── main.tf
-│       ├── variables.tf
-│       ├── outputs.tf
-│       ├── networking.tf
 │       ├── compute.tf
-│       ├── data.tf
-│       └── security.tf
+│       ├── ecr.tf
+│       ├── endpoints.tf
+│       ├── iam.tf
+│       ├── networking.tf
+│       ├── rds.tf
+│       ├── security_groups.tf
+│       ├── storage.tf
+│       ├── variables.tf
+│       └── outputs.tf
 ├── services/
 │   ├── api-gateway/
 │   │   ├── cmd/
 │   │   │   └── main.go
 │   │   ├── internal/
+│   │   │   ├── config/
 │   │   │   ├── handler/
 │   │   │   ├── middleware/
 │   │   │   └── proxy/
-│   │   ├── Dockerfile
 │   │   └── go.mod
 │   └── vulnerability-scanner/
-│       ├── cmd/
-│       │   └── main.go
-│       ├── internal/
-│       │   ├── handler/
-│       │   ├── scanner/
-│       │   ├── store/
-│       │   └── report/
-│       ├── Dockerfile
 │       └── go.mod
 ├── .github/
 │   └── workflows/
-│       ├── api-gateway.yml
-│       └── vulnerability-scanner.yml
+│       └── .gitkeep
 └── README.md
 ```
  
