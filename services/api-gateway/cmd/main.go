@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -15,16 +14,12 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/cmd/handler"
 )
 
 type HealthResponse struct {
 	Status  string `json:"status"`
 	Service string `json:"service"`
-}
-
-type ErrorResponse struct {
-	Error string `json:"error"`
-	Code  int    `json:"code"`
 }
 
 // statusResponseWriter wraps the real response writer so middleware can record
@@ -77,42 +72,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
-	contentType := r.Header.Get("Content-Type")
-	if !strings.HasPrefix(contentType, "application/json") {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		errorResponse := ErrorResponse{
-			Error: "content type must be application/json",
-			Code:  http.StatusUnsupportedMediaType,
-		}
-		json.NewEncoder(w).Encode(errorResponse)
-		return
-	}
-	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
-	w.Header().Set("Content-Type", "application/json")
-	if errors.Is(err, context.DeadlineExceeded) {
-		errorResponse := ErrorResponse{
-			Error: "Gateway Timeout",
-			Code:  http.StatusGatewayTimeout,
-		}
-		w.WriteHeader(http.StatusGatewayTimeout)
-		json.NewEncoder(w).Encode(errorResponse)
-		return
-	}
-	if err != nil {
-		errorResponse := ErrorResponse{
-			Error: "Bad Gateway",
-			Code:  http.StatusBadGateway,
-		}
-		w.WriteHeader(http.StatusBadGateway)
-		json.NewEncoder(w).Encode(errorResponse)
-		return
-	}
-	w.WriteHeader(statusCode)
-	w.Write(respBytes)
-
-}
 
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
 // log level value.
@@ -163,7 +122,7 @@ func main() {
 
 	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
-	scanHandler := newScanHandler(scannerProxy)
+	scanHandler := NewScanHandler(scannerProxy)
 
 	rateLimitedScanHandler := rateLimiter.Middleware(scanHandler)
 
