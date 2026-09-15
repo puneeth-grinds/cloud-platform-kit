@@ -27,7 +27,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		p.baseURL+"/scan",
+		p.baseURL+"scan",
 		body,
 	)
 	if err != nil {
@@ -37,7 +37,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded){
+		if errors.Is(err, context.DeadlineExceeded) {
 			return 0, nil, context.DeadlineExceeded
 		}
 		return 0, nil, err
@@ -48,5 +48,5 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		return 0, nil, err
 	}
 	return resp.StatusCode, responseBody, nil
-	
+
 }
