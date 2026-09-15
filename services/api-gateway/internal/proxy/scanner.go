@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"strings"
@@ -13,20 +14,23 @@ import (
 type ScannerProxy struct {
 	baseURL string
 	client  *http.Client
+	logger *slog.Logger
 }
 
-func NewScannerProxy(scannerURL string) *ScannerProxy {
+func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
 	httpClient := http.Client{Timeout: 30 * time.Second}
 
 	proxy := ScannerProxy{
 		baseURL: scannerURL,
 		client:  &httpClient,
+		logger: logger,
 	}
 	return &proxy
 }
 
-func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
+func (p *ScannerProxy, ) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
 	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
+	start := time.Now()
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
@@ -50,6 +54,13 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		return 0, nil, err
 	}
 	defer resp.Body.Close()
+	duration := time.Since(start)
+	p.logger.InfoContext(
+		ctx,
+		"scanner request complete",
+		"status", resp.StatusCode,
+		"duration", slog.Duration()
+	)
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, nil, err
