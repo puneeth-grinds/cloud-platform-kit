@@ -44,7 +44,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 			return 0, nil, context.DeadlineExceeded
 		}
 		var netErr net.Error
-		if errors.Is(err, netErr) && netErr.Timeout() {
+		if errors.As(err, netErr) && netErr.Timeout() {
 			return 0, nil, netErr
 		}
 		return 0, nil, err
