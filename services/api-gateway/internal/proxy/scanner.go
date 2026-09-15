@@ -23,4 +23,6 @@ func NewScannerProxy(scannerURL string) *ScannerProxy {
 	return &proxy
 }
 
-func ForwardRequest(ctx context)
+func (p *ScannerProxy) ForwardRequest(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
+
+}
