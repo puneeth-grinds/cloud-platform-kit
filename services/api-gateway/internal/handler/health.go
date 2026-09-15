@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-
 )
 
 type HealthResponse struct {
