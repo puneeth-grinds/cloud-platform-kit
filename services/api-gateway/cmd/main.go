@@ -100,9 +100,6 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
 	}
 
-	
-
-
 }
 
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
