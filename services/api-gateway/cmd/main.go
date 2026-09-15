@@ -84,20 +84,14 @@ func newScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
 	contentType := r.Header.Get("Content-Type")
-	bodyBytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
-		return
-	}
-	bodyString := string(bodyBytes)
-	body := strings.NewReader(bodyString)
 	if !strings.HasPrefix(contentType, "application/json") {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), body, contentType)
+	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
 	if err != nil {
 		http.Error(w, "error: Failed to read body", http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
