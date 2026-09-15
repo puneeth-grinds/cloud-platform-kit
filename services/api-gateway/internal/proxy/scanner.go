@@ -47,6 +47,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		if errors.Is(err, netErr) && netErr.Timeout(){
 			return 0, nil, netErr
 		}
+		return 0, nil, err
 	}
 	defer resp.Body.Close()
 	responseBody, err := io.ReadAll(resp.Body)
