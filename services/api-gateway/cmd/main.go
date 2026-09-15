@@ -22,11 +22,6 @@ type HealthResponse struct {
 	Service string `json:"service"`
 }
 
-type ScanResponse struct {
-	Status  string `json:"status"`
-	Service string `json:"service"`
-}
-
 type ErrorResponse struct {
 	Error string `json:"error"`
 	Code  int    `json:"code"`
@@ -119,8 +114,6 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	w.Write(respBytes)
 
