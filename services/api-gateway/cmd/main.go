@@ -33,7 +33,7 @@ func parseLogLevel(value string) slog.Level {
 
 }
 func main() {
-	// create context that listens for the SIGNINT signal
+	// create context that listens for the SIGNNT signal
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	// Load config before starting the server so missing required environment
