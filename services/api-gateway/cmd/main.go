@@ -139,13 +139,15 @@ func main() {
 
 	mux.HandleFunc("GET /health", healthHandler)
 
-	rateLimitedScanHandler := rateLimiter.Middleware(http.HandlerFunc(scanHandler))
+	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
+
+	scanHandler := newScanHandler(scannerProxy)
+
+	rateLimitedScanHandler := rateLimiter.Middleware(scanHandler)
 
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(rateLimitedScanHandler)
 
 	mux.Handle("GET /scan", protectedScanHandler)
-
-	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
 	wrappedMux := loggingMiddleware(logger)(mux)
 
