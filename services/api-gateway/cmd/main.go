@@ -88,12 +88,12 @@ func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.Sca
 		return
 	}
 	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
-	if err == context.DeadlineExceeded{
+	if err == context.DeadlineExceeded {
 		http.Error(w, "error:Gateway Timeout error", http.StatusGatewayTimeout)
 		return
 	}
-	if err != nil{
-		http.Error(w,"Bad Gateway", http.StatusBadGateway)
+	if err != nil {
+		http.Error(w, "Bad Gateway", http.StatusBadGateway)
 		return
 	}
 
