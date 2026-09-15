@@ -96,7 +96,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /health", healthHandler)
+	mux.HandleFunc("GET /health", handler.HealthHandler)
 
 	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
