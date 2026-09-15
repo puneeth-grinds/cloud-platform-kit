@@ -84,7 +84,7 @@ func newScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
 	contentType := r.Header.Get("Content-Type")
 
-	if !strings.HasPrefix(contentType,"application/json"){
+	if !strings.HasPrefix(contentType, "application/json") {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
