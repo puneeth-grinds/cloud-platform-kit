@@ -16,10 +16,11 @@ type rateLimitingEntry struct {
 
 type RateLimiter struct {
 	requests sync.Map
-	rate     int           //maximum requests allowed
-	per      time.Duration // time window eg: 1 min
+	rate     int
+	per      time.Duration
 }
 
+// NewRateLimiter creates a fixed-window limiter using requests per minute.
 func NewRateLimiter(rate int) *RateLimiter {
 	return &RateLimiter{
 		rate: rate,
@@ -27,11 +28,16 @@ func NewRateLimiter(rate int) *RateLimiter {
 	}
 }
 
+// Middleware tracks request counts per API key and returns 429 when the key has
+// used all requests in the current one-minute window.
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-API-Key")
 
 		now := time.Now()
+
+		// Load the existing counter for this API key, or create the first counter
+		// when this key is seen for the first time.
 		entry := &rateLimitingEntry{
 			Count:       1,
 			WindowStart: now,
@@ -40,6 +46,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		entry = actual.(*rateLimitingEntry)
 		entry.mu.Lock()
 
+		// Existing keys either start a new window or increment the current one.
 		if loaded {
 			if now.Sub(entry.WindowStart) >= rl.per {
 				entry.Count = 1
@@ -51,6 +58,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 
 		if entry.Count > rl.rate {
 			w.Header().Set("Content-Type", "application/json")
+
+			// Retry-After tells the client how many seconds remain before the
+			// current rate-limit window resets.
 			windowEndsAt := entry.WindowStart.Add(rl.per)
 			retryAfter := windowEndsAt.Sub(now)
 			retryAfterSec := retryAfter.Seconds()
@@ -73,7 +83,5 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 
 		entry.mu.Unlock()
 		next.ServeHTTP(w, r)
-
 	})
-
 }

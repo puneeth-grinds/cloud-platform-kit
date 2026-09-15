@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
@@ -12,84 +11,12 @@ import (
 	"time"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/handler"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
 )
 
-type HealthResponse struct {
-	Status  string `json:"status"`
-	Service string `json:"service"`
-}
-
-type ScanResponse struct {
-	Status  string `json:"status"`
-	Service string `json:"service"`
-}
-
-// statusResponseWriter wraps the real response writer so middleware can record
-// the status code written by the handler.
-type statusResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (sw *statusResponseWriter) WriteHeader(statusCode int) {
-	sw.statusCode = statusCode
-	sw.ResponseWriter.WriteHeader(statusCode)
-}
-
-func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
-
-			// Default to 200 because Go sends that status when a handler writes
-			// a body without explicitly calling WriteHeader.
-			wrappedWriter := &statusResponseWriter{
-				ResponseWriter: w,
-				statusCode:     http.StatusOK,
-			}
-			next.ServeHTTP(wrappedWriter, r)
-
-			logger.Info("HTTP Request",
-				slog.String("method", r.Method),
-				slog.String("path", r.URL.Path),
-				slog.Int("status", wrappedWriter.statusCode),
-				slog.Duration("duration", time.Since(start)),
-			)
-		})
-	}
-}
-
-// healthHandler is used by local checks and the load balancer to confirm that
-// the api-gateway process is running.
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	response := HealthResponse{
-		Status:  "ok",
-		Service: "api-gateway",
-	}
-
-	json.NewEncoder(w).Encode(response)
-
-}
-
-func scanHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	response := ScanResponse{
-		Status:  "accepted",
-		Service: "api-gateway",
-	}
-	json.NewEncoder(w).Encode(response)
-}
-
-// parseLogLevel converts the LOG_LEVEL string from config into slog's typed
-// log level value.
 func parseLogLevel(value string) slog.Level {
-
 	switch strings.ToLower(value) {
 	case "debug":
 		return slog.LevelDebug
@@ -102,12 +29,14 @@ func parseLogLevel(value string) slog.Level {
 	default:
 		return slog.LevelInfo
 	}
-
 }
+
 func main() {
-	// create context that listens for the SIGNINT signal
+	// Create a root context that is cancelled when the process receives
+	// SIGINT or SIGTERM. This is what triggers graceful shutdown.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
+
 	// Load config before starting the server so missing required environment
 	// variables fail fast.
 	cfg, err := config.Load()
@@ -131,15 +60,21 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /health", healthHandler)
+	// Health is public because load balancers and local checks must be able to
+	// call it without an API key.
+	mux.HandleFunc("GET /health", handler.HealthHandler)
 
-	rateLimitedScanHandler := rateLimiter.Middleware(http.HandlerFunc(scanHandler))
+	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
+	// /scan flow: auth checks the API key, rate limit checks request volume,
+	// then the handler forwards the request to the vulnerability-scanner.
+	scanHandler := handler.NewScanHandler(scannerProxy)
+	rateLimitedScanHandler := rateLimiter.Middleware(scanHandler)
 	protectedScanHandler := middleware.APIKeyMiddleware(cfg.APIKey)(rateLimitedScanHandler)
+	mux.Handle("POST /scan", protectedScanHandler)
 
-	mux.Handle("GET /scan", protectedScanHandler)
-
-	wrappedMux := loggingMiddleware(logger)(mux)
+	// Logging wraps the whole mux so every route gets one structured request log.
+	wrappedMux := middleware.LoggingMiddleware(logger)(mux)
 
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
@@ -160,8 +95,10 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+
 	<-ctx.Done()
 	logger.Info("server is shutting down gracefully")
+
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -170,5 +107,4 @@ func main() {
 	} else {
 		logger.Info("server shutdown complete")
 	}
-
 }
