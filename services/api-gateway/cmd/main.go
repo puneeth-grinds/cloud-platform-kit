@@ -90,12 +90,17 @@ func newScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
 	contentType := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(contentType, "application/json") {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
+		errorResponse := ErrorResponse{
+			Error: "content type must be application/json",
+			code: http.StatusUnsupportedMediaType
+		}
 		return
 	}
 	statusCode, respBytes, err := scannerProxy.Forward(r.Context(), r.Body, contentType)
 	if errors.Is(err, context.DeadlineExceeded) {
-		http.Error(w, "error:Gateway Timeout error", http.StatusGatewayTimeout)
+		errorResponse := ErrorResponse{
+			Error: "",
+		}
 		return
 	}
 	if err != nil {
