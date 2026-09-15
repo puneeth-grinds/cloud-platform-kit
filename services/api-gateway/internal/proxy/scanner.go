@@ -34,5 +34,5 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 		return 0, nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
-	
+
 }
