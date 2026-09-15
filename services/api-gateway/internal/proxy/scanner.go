@@ -14,7 +14,7 @@ import (
 type ScannerProxy struct {
 	baseURL string
 	client  *http.Client
-	logger *slog.Logger
+	logger  *slog.Logger
 }
 
 func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
@@ -23,12 +23,12 @@ func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
 	proxy := ScannerProxy{
 		baseURL: scannerURL,
 		client:  &httpClient,
-		logger: logger,
+		logger:  logger,
 	}
 	return &proxy
 }
 
-func (p *ScannerProxy, ) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
+func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
 	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
 	start := time.Now()
 	req, err := http.NewRequestWithContext(
