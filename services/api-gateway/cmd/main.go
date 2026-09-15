@@ -82,14 +82,12 @@ func newScanHandler(scannerProxy *proxy.ScannerProxy) http.Handler {
 }
 
 func scanHandler(w http.ResponseWriter, r *http.Request, scannerProxy *proxy.ScannerProxy) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	contentType := r.Header.Get("Content-Type")
 
-	response := ScanResponse{
-		Status:  "accepted",
-		Service: "api-gateway",
+	if !strings.HasPrefix(contentType,"application/json"){
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return
 	}
-	json.NewEncoder(w).Encode(response)
 }
 
 // parseLogLevel converts the LOG_LEVEL string from config into slog's typed
