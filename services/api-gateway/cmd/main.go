@@ -14,6 +14,7 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/handler"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/scanner"
 )
 
 func parseLogLevel(value string) slog.Level {
