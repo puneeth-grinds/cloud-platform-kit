@@ -6,5 +6,7 @@ WORKDIR /app
 
 COPY go.mod .
 
+RUN go mod download 
+
 # --- Stage 2: Production Stage ---
 
