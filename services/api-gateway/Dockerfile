@@ -27,3 +27,6 @@ RUN APK add --no-cache ca-certificates
 RUN addgroup -g 10001 app && adduser -D -u 10001 -G app appuser
 
 COPY app/api-gateway .
+
+USER appuser
+
