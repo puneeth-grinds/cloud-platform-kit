@@ -19,3 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 # --- Stage 2: Production Stage ---
 
 FROM alpine:3.24 AS runner
+
+WORKDIR /app
+
+
