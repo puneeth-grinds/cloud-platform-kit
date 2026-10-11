@@ -22,7 +22,7 @@ FROM alpine:3.24 AS runner
 
 WORKDIR /app
 
-RUN APK add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates
 
 RUN addgroup -g 10001 app && adduser -D -u 10001 -G app appuser
 
