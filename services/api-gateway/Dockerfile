@@ -26,7 +26,7 @@ RUN apk add --no-cache ca-certificates
 
 RUN addgroup -g 10001 app && adduser -D -u 10001 -G app appuser
 
-COPY --from=build --chown=appuser:app app/api-gateway .
+COPY --from=build --chown=appuser:app /out/api-gateway .
 
 USER appuser
 
