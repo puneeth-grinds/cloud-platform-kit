@@ -8,5 +8,13 @@ COPY go.mod .
 
 RUN go mod download 
 
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -trimpath \
+    -ldflags="-s -w" \
+    -o /out/api-gateway ./cmd
+
+
 # --- Stage 2: Production Stage ---
 
