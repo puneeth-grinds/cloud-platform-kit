@@ -30,3 +30,5 @@ COPY app/api-gateway .
 
 USER appuser
 
+EXPOSE 8080
+
