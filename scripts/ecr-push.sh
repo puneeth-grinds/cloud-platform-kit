@@ -73,5 +73,5 @@ aws ecr describe-images \
   --image-ids imageTag="$IMAGE_TAG"
 
 echo "STEP 7: Record these Image URI's"
-echo "<api-gateway-repository-url>:<git-sha>"
-echo "<vulnerability-scanner-repository-url>:<git-sha>"
+echo "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
+echo $VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
