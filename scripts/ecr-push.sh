@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+podman_ecr() {
+  env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy podman "$@"
+}
+
 # STEP 1
 
 echo "STEP 1: Set Deployment Values"
@@ -27,7 +31,7 @@ echo "STEP 3: Authenticate Podman to ECR Registry"
 aws ecr get-login-password \
   --region "$AWS_REGION" \
   --profile "$AWS_PROFILE" | \
-podman login \
+podman_ecr login \
   --username AWS \
   --password-stdin \
   "$ECR_REGISTRY"
@@ -42,7 +46,7 @@ podman build --platform linux/amd64 \
 podman tag api-gateway:"$IMAGE_TAG" \
   "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
 
-podman push "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
+podman_ecr push "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
 
 # STEP 5 
 
@@ -55,7 +59,7 @@ podman build --platform linux/amd64 \
 podman tag vulnerability-scanner:"$IMAGE_TAG" \
   "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
 
-podman push "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
+podman_ecr push "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
 
 # STEP 6
 
