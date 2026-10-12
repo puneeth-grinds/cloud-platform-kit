@@ -75,13 +75,9 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
   container_definitions = jsonencode([
     {
       name      = "api-gateway"
-      image     = "public.ecr.aws/docker/library/busybox:1.38.0"
+      image     = var.api_gateway_image_uri
       essential = true
-      command = [
-        "sh",
-        "-c",
-        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8080 -h /www"
-      ]
+
       portMappings = [
         {
           containerPort = 8080
@@ -90,14 +86,19 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
       ]
       secrets = [
         {
-          name      = "DATABASE_URL"
-          valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
+          name      = "API_KEY"
+          valueFrom = aws_ssm_parameter.api_gateway_api_key_ssm.arn
         }
       ]
       environment = [
         {
           name  = "SCANNER_URL"
           value = "http://vulnerability-scanner.cloud-platform-kit.local:8081"
+
+        },
+        {
+          name  = "PORT"
+          value = "8080"
         }
       ]
       logConfiguration = {
@@ -124,13 +125,9 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   container_definitions = jsonencode([
     {
       name      = "vulnerability-scanner"
-      image     = "public.ecr.aws/docker/library/busybox:1.38.0"
+      image     = var.vulnerability_scanner_image_uri
       essential = true
-      command = [
-        "sh",
-        "-c",
-        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8081 -h /www"
-      ]
+
       portMappings = [
         {
           containerPort = 8081
@@ -147,6 +144,15 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
         {
           name  = "S3_BUCKET"
           value = aws_s3_bucket.s3_storage.bucket
+
+        },
+        {
+          name  = "PORT"
+          value = "8081"
+        },
+        {
+          name  = "AWS_REGION"
+          value = var.aws_region
         }
       ]
       logConfiguration = {

@@ -17,3 +17,9 @@ availability_zone_1b = "us-west-1c"
 rds_database_name = "cloudplatformkitrds"
 rds_database_username = "dbadmin"
 rds_database_password = "ReplaceWithSecurePassword123"
+
+# Application secret and immutable ECR image URIs
+api_gateway_api_key             = "ReplaceWithSecureAPIKey"
+api_gateway_image_uri           = "<account-id>.dkr.ecr.us-west-1.amazonaws.com/api-gateway:<commit-sha>"
+vulnerability_scanner_image_uri = "<account-id>.dkr.ecr.us-west-1.amazonaws.com/vulnerability-scanner:<commit-sha>"
+
