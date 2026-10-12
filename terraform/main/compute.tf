@@ -77,11 +77,7 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
       name      = "api-gateway"
       image     = var.api_gateway_image_uri
       essential = true
-      command = [
-        "sh",
-        "-c",
-        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8080 -h /www"
-      ]
+
       portMappings = [
         {
           containerPort = 8080
@@ -126,11 +122,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
       name      = "vulnerability-scanner"
       image     = var.vulnerability_scanner_image_uri
       essential = true
-      command = [
-        "sh",
-        "-c",
-        "mkdir -p /www && echo ok > /www/health && exec httpd -f -p 8081 -h /www"
-      ]
+
       portMappings = [
         {
           containerPort = 8081
