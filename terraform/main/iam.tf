@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "ecs_task_execution_ssm" {
   statement {
     effect    = "Allow"
     actions   = ["ssm:GetParameters"]
-    resources = [aws_ssm_parameter.rds_db_connection_string.arn]
+    resources = [aws_ssm_parameter.rds_db_connection_string.arn, aws_ssm_parameter.api_gateway_api_key_ssm.arn]
   }
 }
 
