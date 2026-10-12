@@ -18,8 +18,8 @@ cd terraform/main
 
 export API_GATEWAY_REPOSITORY_URL=$(terraform output -raw ecr_api_gateway_url)
 export VULNERABILITY_SCANNER_REPOSITORY_URL=$(terraform output -raw ecr_vulnerability_scanner_url)
-
-
+export ECR_REGISTRY=${API_GATEWAY_REPOSITORY_URL%%/*}
+cd ../..
 # STEP 3 
 
 echo "STEP 3: Authenticate Podman to ECR Registry"
