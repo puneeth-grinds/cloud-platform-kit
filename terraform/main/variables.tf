@@ -73,3 +73,8 @@ variable "rds_database_password" {
   description = "Specifies the RDS database password"
   sensitive   = true
 }
+
+variable "api_gateway_image_uri" {
+  type = string
+  description = "stores the full ECR image address, including Git-SHA tag"
+}
