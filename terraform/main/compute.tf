@@ -155,7 +155,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
           value = "8081"
         },
         {
-          name = "AWS_REGION"
+          name  = "AWS_REGION"
           value = var.aws_region
         }
       ]
