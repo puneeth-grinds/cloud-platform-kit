@@ -99,10 +99,6 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
         {
           name  = "PORT"
           value = "8080"
-        },
-        {
-          name  = "AWS_REGION"
-          value = var.aws_region
         }
       ]
       logConfiguration = {
