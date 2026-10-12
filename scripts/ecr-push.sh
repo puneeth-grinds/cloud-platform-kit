@@ -19,8 +19,6 @@ export ECR_REGISTRY=${API_GATEWAY_REPOSITORY_URL%%/*}
 
 echo "STEP 3: Authenticate Podman to ECR Registry"
 
-cd ../..
-
 aws ecr get-login-password \
   --region "$AWS_REGION" \
   --profile "$AWS_PROFILE" | \
