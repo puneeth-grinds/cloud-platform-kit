@@ -78,3 +78,8 @@ variable "api_gateway_image_uri" {
   type        = string
   description = "stores the full ECR image address, including Git-SHA tag"
 }
+
+variable "vulnerability_scanner_image_uri" {
+  type        = string
+  description = "stores the full ECR image address, including Git-SHA tag"
+}
