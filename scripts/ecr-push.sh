@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 echo "step1: Retrieve ECR Repo URL's"
 cd terraform/main
 
