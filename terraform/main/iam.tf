@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "ecs_task_execution_ssm" {
 }
 
 resource "aws_iam_role_policy" "ecs_task_execution_ssm" {
-  name   = "read-service-parameter"
+  name   = "read-service-parameters"
   role   = aws_iam_role.ecs_task_execution.id
   policy = data.aws_iam_policy_document.ecs_task_execution_ssm.json
 }
