@@ -94,11 +94,15 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
         {
           name  = "SCANNER_URL"
           value = "http://vulnerability-scanner.cloud-platform-kit.local:8081"
-          
+
         },
         {
-          name = "PORT"
+          name  = "PORT"
           value = "8080"
+        },
+        {
+          name  = "AWS_REGION"
+          value = var.aws_region
         }
       ]
       logConfiguration = {
@@ -144,10 +148,10 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
         {
           name  = "S3_BUCKET"
           value = aws_s3_bucket.s3_storage.bucket
-          
+
         },
         {
-          name = "PORT"
+          name  = "PORT"
           value = "8081"
         }
       ]
