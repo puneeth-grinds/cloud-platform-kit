@@ -37,3 +37,14 @@ podman tag api-gateway:"$IMAGE_TAG" \
   "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
 
 podman push "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
+
+echo "STEP 5: Build and Push Vulnerability Scanner"
+
+podman build --platform linux/amd64 \
+  -t vulnerability-scanner:"$IMAGE_TAG" \
+  ./services/vulnerability-scanner
+
+podman tag vulnerability-scanner:"$IMAGE_TAG" \
+  "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
+
+podman push "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
