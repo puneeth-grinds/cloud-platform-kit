@@ -11,7 +11,7 @@ private_1b = "10.0.4.0/24"
 
 # Availability zones
 availability_zone_1a = "us-west-1a"
-availability_zone_1b = "us-west-1b"
+availability_zone_1b = "us-west-1c"
 
 # Database Name
 rds_database_name = "cloudplatformkitrds"
