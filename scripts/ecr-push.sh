@@ -28,3 +28,14 @@ podman login \
   --username AWS \
   --password-stdin \
   "$ECR_REGISTRY"
+
+echo "STEP 4: Build and Push API Gateway"
+
+podman build --platform linux/amd64 \
+  -t api-gateway:"$IMAGE_TAG" \
+  ./services/api-gateway
+
+podman tag api-gateway:"$IMAGE_TAG" \
+  "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
+
+podman push "$API_GATEWAY_REPOSITORY_URL:$IMAGE_TAG"
