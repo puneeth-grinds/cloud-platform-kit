@@ -21,7 +21,10 @@ echo "STEP 3: Authenticate Podman to ECR Registry"
 
 cd ../..
 
-export AWS_REGION=us-west-1
-export AWS_PROFILE=cloud-platform-kit-login
-export IMAGE_TAG=$(git rev-parse --short HEAD)
-export ECR_REGISTRY=${API_GATEWAY_REPOSITORY_URL%%/*}
+aws ecr get-login-password \
+  --region "$AWS_REGION" \
+  --profile "$AWS_PROFILE" | \
+podman login \
+  --username AWS \
+  --password-stdin \
+  "$ECR_REGISTRY"
