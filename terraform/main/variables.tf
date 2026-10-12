@@ -87,5 +87,5 @@ variable "vulnerability_scanner_image_uri" {
 variable "api_gateway_api_key" {
   type        = string
   description = "API Gateway API key"
-  sensitive = true
+  sensitive   = true
 }
