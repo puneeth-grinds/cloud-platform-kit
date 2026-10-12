@@ -86,7 +86,7 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
       ]
       secrets = [
         {
-          name = "API_KEY"
+          name      = "API_KEY"
           valueFrom = aws_ssm_parameter.api_gateway_api_key_ssm.arn
         }
       ]
