@@ -6,7 +6,6 @@ set -euo pipefail
 
 echo "STEP 1: Set Deployment Values"
 
-cd ../..
 
 export AWS_REGION=us-west-1
 export AWS_PROFILE=cloud-platform-kit-login
