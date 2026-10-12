@@ -4,4 +4,7 @@ resource "aws_ssm_parameter" "api_gateway_api_key_ssm" {
   type        = "SecureString"
   value       = var.api_gateway_api_key
 
+  tags = {
+    Component = "api-gateway"
+  }
 }
