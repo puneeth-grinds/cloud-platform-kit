@@ -86,10 +86,6 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
       ]
       secrets = [
         {
-          name      = "DATABASE_URL"
-          valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
-        },
-        {
           name = "API_KEY"
           valueFrom = aws_ssm_parameter.api_gateway_api_key_ssm.arn
         }
