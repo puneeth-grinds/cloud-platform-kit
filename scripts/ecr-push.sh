@@ -48,3 +48,17 @@ podman tag vulnerability-scanner:"$IMAGE_TAG" \
   "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
 
 podman push "$VULNERABILITY_SCANNER_REPOSITORY_URL:$IMAGE_TAG"
+
+echo "STEP 6: Verify Both Images"
+
+aws ecr describe-images \
+  --region "$AWS_REGION" \
+  --profile "$AWS_PROFILE" \
+  --repository-name api-gateway \
+  --image-ids imageTag="$IMAGE_TAG"
+
+aws ecr describe-images \
+  --region "$AWS_REGION" \
+  --profile "$AWS_PROFILE" \
+  --repository-name vulnerability-scanner \
+  --image-ids imageTag="$IMAGE_TAG"
