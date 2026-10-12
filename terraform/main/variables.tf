@@ -75,6 +75,6 @@ variable "rds_database_password" {
 }
 
 variable "api_gateway_image_uri" {
-  type = string
+  type        = string
   description = "stores the full ECR image address, including Git-SHA tag"
 }
