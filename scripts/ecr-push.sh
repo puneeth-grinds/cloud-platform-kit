@@ -16,3 +16,12 @@ export AWS_REGION=us-west-1
 export AWS_PROFILE=cloud-platform-kit-login
 export IMAGE_TAG=$(git rev-parse --short HEAD)
 export ECR_REGISTRY=${API_GATEWAY_REPOSITORY_URL%%/*}
+
+echo "STEP 3: Authenticate Podman to ECR Registry"
+
+cd ../..
+
+export AWS_REGION=us-west-1
+export AWS_PROFILE=cloud-platform-kit-login
+export IMAGE_TAG=$(git rev-parse --short HEAD)
+export ECR_REGISTRY=${API_GATEWAY_REPOSITORY_URL%%/*}
