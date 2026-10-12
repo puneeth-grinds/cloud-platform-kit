@@ -124,7 +124,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   container_definitions = jsonencode([
     {
       name      = "vulnerability-scanner"
-      image     = "public.ecr.aws/docker/library/busybox:1.38.0"
+      image     = var.vulnerability_scanner_image_uri
       essential = true
       command = [
         "sh",
