@@ -24,6 +24,7 @@ coverage.*
 
 # Local corporate certificate used only for container builds
 services/vulnerability-scanner/caps_ca_bundle.crt
+services/api-gateway/caps_ca_bundle.crt
 
 # macOS
 .DS_Store
