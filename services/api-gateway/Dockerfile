@@ -6,7 +6,12 @@ WORKDIR /app
 
 COPY go.mod .
 
-RUN go mod download 
+COPY caps_ca_bundle.crt /usr/local/share/ca-certificates/caps_ca_bundle.crt
+
+RUN apk add --no-cache ca-certificates && \
+    cat /usr/local/share/ca-certificates/caps_ca_bundle.crt >> /etc/ssl/certs/ca-certificates.crt
+
+RUN go mod download
 
 COPY . .
 
@@ -22,7 +27,7 @@ FROM alpine:3.24 AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 RUN addgroup -g 10001 app && adduser -D -u 10001 -G app appuser
 
