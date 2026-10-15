@@ -92,7 +92,11 @@ resource "aws_iam_policy" "github-actions-deploy" {
         Sid    = "IAMPassRoleScoped"
         Effect = "Allow"
         Action = ["iam:PassRole"]
-        Resource = 
+        Resource = [
+          aws_iam_role.ecs_task_execution.arn,
+          aws_iam_role.api_gateway_task.arn,
+          aws_iam_role.vulnerability_scanner_task.arn,
+        ]
         Condition = {
           StringEquals = {
             "iam:PassedToService" = "ecs-tasks.amazonaws.com"
