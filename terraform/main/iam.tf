@@ -25,6 +25,12 @@ data "aws_iam_policy_document" "github-actions" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:puneeth-grinds/cloud-platform-kit:ref:refs/heads/main"]
+    }
   }
 }
 
