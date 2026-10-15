@@ -65,7 +65,16 @@ resource "aws_iam_policy" "github-actions-deploy" {
         Resource = "*"
       },
       {
-        
+        Sid    = "ECRPushActions"
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+        ]
       }
     ]
 
