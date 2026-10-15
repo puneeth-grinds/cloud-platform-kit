@@ -19,13 +19,14 @@ data "aws_iam_policy_document" "github-actions" {
     }
 
     actions = ["sts:AssumeRoleWithWebIdentity"]
-
+    #  RULE 1: The token MUST be explicitly built for AWS.
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
 
+    #  RULE 2: The token MUST come from this exact repository AND this exact branch.
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
