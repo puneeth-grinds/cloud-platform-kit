@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "github-actions" {
       identifiers = [ aws_iam_openid_connect_provider.github.arn ]
     }
 
-    actions = [ "sts" ]
+    actions = [ "sts:AssumeRoleWithWebIdentity" ]
   }
 }
 
