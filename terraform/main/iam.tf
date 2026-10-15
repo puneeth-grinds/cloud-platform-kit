@@ -11,15 +11,15 @@ data "aws_iam_policy_document" "ecs_tasks_assume_role" {
   }
 }
 
-resource "aws_iam_role" "ecs_task_execution" {
-  name               = "ecs-task-execution"
-  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
-}
-
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]
 
+}
+
+resource "aws_iam_role" "ecs_task_execution" {
+  name               = "ecs-task-execution"
+  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
