@@ -36,3 +36,8 @@ output "alb_dns_name" {
   value       = aws_lb.lb.dns_name
   description = "Provides the lb dns name"
 }
+
+output "github_actions_role_arn" {
+  value       = aws_iam_role.github-actions-deploy.arn
+  description = "Provides arn for the github actions role"
+}
