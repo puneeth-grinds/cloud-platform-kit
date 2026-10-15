@@ -119,7 +119,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
 
 resource "aws_iam_role_policy_attachment" "github-actions-deploy" {
   role       = aws_iam_role.github-actions-deploy.name
-  policy_arn = "aws_iam_policy.github-actions-deploy.arn"
+  policy_arn = aws_iam_policy.github-actions-deploy.arn
 }
 
 data "aws_iam_policy_document" "ecs_task_execution_ssm" {
