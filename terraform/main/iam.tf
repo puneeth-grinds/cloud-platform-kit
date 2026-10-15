@@ -88,7 +88,7 @@ resource "aws_iam_policy" "github-actions-deploy" {
         ]
         Resource = "*"
       },
-            {
+      {
         Sid    = "IAMPassRoleScoped"
         Effect = "Allow"
         Action = ["iam:PassRole"]
