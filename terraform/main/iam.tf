@@ -18,7 +18,7 @@ resource "aws_iam_role" "ecs_task_execution" {
 
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
-  client_id_list = [sts.amazonaws.com]
+  client_id_list = ["sts.amazonaws.com"]
 
 }
 
