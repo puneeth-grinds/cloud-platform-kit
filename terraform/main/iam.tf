@@ -59,8 +59,8 @@ resource "aws_iam_policy" "github-actions-deploy" {
     version = "2012-10-17"
     statement = [
       {
-        sid = "ECRGetAuthorizationToken"
-        Effect = "Allow"
+        sid      = "ECRGetAuthorizationToken"
+        Effect   = "Allow"
         Action   = ["ecr:GetAuthorizationToken"]
         Resource = "*"
       },
@@ -75,9 +75,9 @@ resource "aws_iam_policy" "github-actions-deploy" {
           "ecr:PutImage",
           "ecr:UploadLayerPart"
         ]
-        
+
       },
-            {
+      {
         Sid    = "ECSDeploymentActions"
         Effect = "Allow"
         Action = [
