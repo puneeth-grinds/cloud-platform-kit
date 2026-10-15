@@ -1,1 +1,5 @@
 name: AWS OIDC Connection Test
+
+on:
+  push:
+    branches: [ main ]
