@@ -11,3 +11,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      
+      - name: configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: 
+          region: us-west-1
+      
+      - name: Verify OIDC Connection 
+        run: aws sts get-caller-identity
