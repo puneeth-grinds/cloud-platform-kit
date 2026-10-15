@@ -75,7 +75,19 @@ resource "aws_iam_policy" "github-actions-deploy" {
           "ecr:PutImage",
           "ecr:UploadLayerPart"
         ]
-      }
+        
+      },
+            {
+        Sid    = "ECSDeploymentActions"
+        Effect = "Allow"
+        Action = [
+          "ecs:RegisterTaskDefinition",
+          "ecs:DescribeTaskDefinition",
+          "ecs:DescribeServices",
+          "ecs:UpdateService"
+        ]
+        Resource = "*"
+      },
     ]
 
   })
