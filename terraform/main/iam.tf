@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "github-actions" {
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
