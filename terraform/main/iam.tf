@@ -51,6 +51,11 @@ resource "aws_iam_role" "github-actions-deploy" {
   assume_role_policy = data.aws_iam_policy_document.github-actions.json
 }
 
+resource "aws_iam_policy" "github-actions-deploy" {
+  name        ="github-actions-ecs-ecr-least-privilege"
+    description ="Least-privilege policy for GitHub Actions to authenticate, push to ECR, deploy to ECS, and pass specific roles."
+
+}
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
   role       = aws_iam_role.ecs_task_execution.name
