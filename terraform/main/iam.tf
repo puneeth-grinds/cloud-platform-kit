@@ -75,6 +75,10 @@ resource "aws_iam_policy" "github-actions-deploy" {
           "ecr:PutImage",
           "ecr:UploadLayerPart"
         ]
+        Resource = [
+          aws_ecr_repository.ecr_api_gateway.arn,
+          aws_ecr_repository.ecr_vulnerability_scanner.arn,
+        ]
 
       },
       {
