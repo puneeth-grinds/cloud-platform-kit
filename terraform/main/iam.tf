@@ -11,6 +11,17 @@ data "aws_iam_policy_document" "ecs_tasks_assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "github-actions" {
+  statement {
+    principals {
+      type = "Service"
+      identifiers = [ aws_iam_openid_connect_provider.github.arn ]
+    }
+
+    actions = [ "sts" ]
+  }
+}
+
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]
@@ -22,6 +33,10 @@ resource "aws_iam_role" "ecs_task_execution" {
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
 }
 
+resource "aws_iam_role" "github-actions-deploy" {
+  name = "github-actions-deploy"
+  assume_role_policy = 
+}
 resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
   role       = aws_iam_role.ecs_task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
