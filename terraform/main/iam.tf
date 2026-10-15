@@ -57,7 +57,18 @@ resource "aws_iam_policy" "github-actions-deploy" {
 
   policy = jsonencode({
     version = "2012-10-17"
-    
+    statement = [
+      {
+        sid = "ECRGetAuthorizationToken"
+        Effect = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
+        
+      }
+    ]
+
   })
 }
 
