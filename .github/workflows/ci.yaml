@@ -24,7 +24,7 @@ jobs:
             services/vulnerability-scanner/go.sum
 
       - name: Run API Gateway Tests
-        working-dorectory: services/api-gateway
+        working-directory: services/api-gateway
         run: go test -race -v ./...
       
       - name: Run API Gateway Vet Checks
@@ -32,7 +32,7 @@ jobs:
         run: go vet ./...
 
       - name: Run Vulnerability Scanner Tests
-        working-dorectory: services/vulnerability-scanner
+        working-directory: services/vulnerability-scanner
         run: go test -race -v ./...
       
       - name: Run Vulnerability Scanner Vet Checks
