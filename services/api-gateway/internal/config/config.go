@@ -17,6 +17,8 @@ type Config struct {
 	APIKey string
 	// RateLimitRPM is the max requests per minute allowed per API key.
 	RateLimitRPM int
+	// Version identifies the deployed application revision.
+	Version string
 }
 
 // getEnv reads optional environment variables that have safe defaults.
@@ -51,6 +53,7 @@ func Load() (Config, error) {
 		ScannerURL:   os.Getenv("SCANNER_URL"),
 		APIKey:       os.Getenv("API_KEY"),
 		RateLimitRPM: rateLimitRPMInt,
+		Version:      getEnv("APP_VERSION", "dev"),
 	}
 
 	if cfg.ScannerURL == "" {
