@@ -21,9 +21,8 @@ jobs:
           go-version: '1.27.0'
           cache: true 
           cache-dependency-path: |
-            services/api-gateway/go.sum
             services/vulnerability-scanner/go.sum
 
-
-      - name: Install dependencies
-        run: go mod download 
+      - name: Run API Gateway Tests
+        working-dorectory: services/api-gateway
+        run: go test -race -v ./...
