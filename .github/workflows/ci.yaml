@@ -50,7 +50,12 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    
+      
+    outputs:
+      api_gateway_image_uri: ${{ steps.set-outputs.outputs.api_gateway_image_uri }}
+      vulnerability_scanner_image_uri: ${{ steps.set-outputs.outputs.vulnerability_scanner_image_uri }}
+
+
     steps:
       - name: checkout Code
         uses: actions/checkout@v4
