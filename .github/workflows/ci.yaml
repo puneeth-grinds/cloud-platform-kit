@@ -54,3 +54,11 @@ jobs:
     steps:
       - name: checkout Code
       uses: actions/checkout@v4
+    
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::512297269123:role/github-actions-deploy
+          aws-region: us-west-1
+      
+      - name: Verify OIDC Connection
