@@ -2,7 +2,7 @@ name: Go test job
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pull_request ]
 
 permissions:
   contents: read
