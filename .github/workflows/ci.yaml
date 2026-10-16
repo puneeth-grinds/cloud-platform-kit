@@ -1,0 +1,6 @@
+name: Go test job
+
+on:
+  push:
+    branches: [ main ]
+
