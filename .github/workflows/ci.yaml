@@ -83,7 +83,7 @@ jobs:
 
           # Build and push Vulnerability Scanner
           docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./services/ulnerability-scanner
-          docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
+          docker push $ECR_REGISTRY/vulnerability-scanner:$IMAGE_TAG
 
       - name: Set Image Outputs
         id: set-outputs
