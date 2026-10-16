@@ -30,4 +30,11 @@ jobs:
       - name: Run API Gateway Vet Checks
         working-directory: services/api-gateway
         run: go vet ./...
-        
+
+      - name: Run Vulnerability Scanner Tests
+        working-dorectory: services/vulnerability-scanner
+        run: go test -race -v ./...
+      
+      - name: Run Vulnerability Scanner Vet Checks
+        working-directory: services/vulnerability-scanner
+        run: go vet ./...
