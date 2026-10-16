@@ -11,7 +11,7 @@ func TestHealthHandler(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
 	recorder := httptest.NewRecorder()
 
-	HealthHandler(recorder, request)
+	NewHealthHandler("test-version")(recorder, request)
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
@@ -22,7 +22,7 @@ func TestHealthHandler(t *testing.T) {
 		t.Fatalf("decode response: %v", err)
 	}
 
-	if response != (HealthResponse{Status: "ok", Service: "api-gateway"}) {
+	if response != (HealthResponse{Status: "ok", Service: "api-gateway", Version: "test-version"}) {
 		t.Fatalf("response = %#v, want api-gateway health response", response)
 	}
 }

@@ -55,6 +55,7 @@ func main() {
 		"log_level", cfg.LogLevel,
 		"scanner_url", cfg.ScannerURL,
 		"ratelimitrpm", cfg.RateLimitRPM,
+		"version", cfg.Version,
 	)
 	rateLimiter := middleware.NewRateLimiter(cfg.RateLimitRPM)
 
@@ -62,7 +63,7 @@ func main() {
 
 	// Health is public because load balancers and local checks must be able to
 	// call it without an API key.
-	mux.HandleFunc("GET /health", handler.HealthHandler)
+	mux.HandleFunc("GET /health", handler.NewHealthHandler(cfg.Version))
 
 	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 
