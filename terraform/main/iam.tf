@@ -56,10 +56,10 @@ resource "aws_iam_policy" "github-actions-deploy" {
   description = "Least-privilege policy for GitHub Actions to authenticate, push to ECR, deploy to ECS, and pass specific roles."
 
   policy = jsonencode({
-    version = "2012-10-17"
-    statement = [
+    Version = "2012-10-17"
+    Statement = [
       {
-        sid      = "ECRGetAuthorizationToken"
+        Sid      = "ECRGetAuthorizationToken"
         Effect   = "Allow"
         Action   = ["ecr:GetAuthorizationToken"]
         Resource = "*"

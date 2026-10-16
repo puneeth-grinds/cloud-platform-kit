@@ -1,0 +1,55 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "api-gateway",
+      "image": "512297269123.dkr.ecr.us-west-1.amazonaws.com/api-gateway:99b64e4",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "SCANNER_URL",
+          "value": "http://vulnerability-scanner.cloud-platform-kit.local:8081"
+        },
+        {
+          "name": "PORT",
+          "value": "8080"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "API_KEY",
+          "valueFrom": "arn:aws:ssm:us-west-1:512297269123:parameter/cloud-platform-kit/api-gateway/api-key"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/api-gateway",
+          "awslogs-region": "us-west-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "api-gateway",
+  "taskRoleArn": "arn:aws:iam::512297269123:role/api-gateway-task",
+  "executionRoleArn": "arn:aws:iam::512297269123:role/ecs-task-execution",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512"
+}

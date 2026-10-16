@@ -1,0 +1,154 @@
+name: Go test job
+
+on:
+  push:
+    branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  go-test-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.0'
+          cache: true 
+          cache-dependency-path: |
+            services/vulnerability-scanner/go.sum
+
+      - name: Run API Gateway Tests
+        working-directory: services/api-gateway
+        run: go test -race -v ./...
+      
+      - name: Run API Gateway Vet Checks
+        working-directory: services/api-gateway
+        run: go vet ./...
+
+      - name: Run Vulnerability Scanner Tests
+        working-directory: services/vulnerability-scanner
+        run: go test -race -v ./...
+      
+      - name: Run Vulnerability Scanner Vet Checks
+        working-directory: services/vulnerability-scanner
+        run: go vet ./...
+    
+  build-and-push:
+    needs: go-test-job
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      api_gateway_image_uri: ${{ steps.set-outputs.outputs.api_gateway_image_uri }}
+      vulnerability_scanner_image_uri: ${{ steps.set-outputs.outputs.vulnerability_scanner_image_uri }}
+
+
+    steps:
+      - name: checkout Code
+        uses: actions/checkout@v4
+    
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN  }}
+          aws-region: ${{vars.AWS_REGION}}
+          allowed-account-ids: "512297269123"
+      
+      - name: Verify OIDC Connection
+        run: aws sts get-caller-identity
+      
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Docker Images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Generate the first 8 characters of GITHUB_SHA
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-8)
+
+          # Build and push API Gateway
+          docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./services/api-gateway
+          docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
+
+
+          # Build and push Vulnerability Scanner
+          docker build -t $ECR_REGISTRY/vulnerability-scanner:$IMAGE_TAG ./services/vulnerability-scanner
+          docker push $ECR_REGISTRY/vulnerability-scanner:$IMAGE_TAG
+
+      - name: Set Image Outputs
+        id: set-outputs
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-8)
+          echo "api_gateway_image_uri=$ECR_REGISTRY/api-gateway:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "vulnerability_scanner_image_uri=$ECR_REGISTRY/vulnerability-scanner:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          allowed-account-ids: "512297269123"
+
+      - name: Render vulnerability-scanner task definition
+        id: render-vulnerability-scanner
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ecs/vulnerability-scanner-task-def.json
+          container-name: vulnerability-scanner
+          image: ${{ needs.build-and-push.outputs.vulnerability_scanner_image_uri }}
+
+      - name: Deploy vulnerability-scanner
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-vulnerability-scanner.outputs.task-definition }}
+          service: vulnerability-scanner
+          cluster: cloud-platform-kit
+          wait-for-service-stability: true
+          wait-max-delay-seconds: 15
+
+      - name: Render api-gateway task definition
+        id: render-api-gateway
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ecs/api-gateway-task-def.json
+          container-name: api-gateway
+          image: ${{ needs.build-and-push.outputs.api_gateway_image_uri }}
+
+      - name: Deploy api-gateway
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-api-gateway.outputs.task-definition }}
+          service: api-gateway
+          cluster: cloud-platform-kit
+          wait-for-service-stability: true
+          wait-max-delay-seconds: 15

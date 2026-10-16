@@ -6,10 +6,7 @@ WORKDIR /app
 
 COPY go.mod .
 
-COPY caps_ca_bundle.crt /usr/local/share/ca-certificates/caps_ca_bundle.crt
-
-RUN apk add --no-cache ca-certificates && \
-    cat /usr/local/share/ca-certificates/caps_ca_bundle.crt >> /etc/ssl/certs/ca-certificates.crt
+RUN apk add --no-cache ca-certificates
 
 RUN go mod download
 
