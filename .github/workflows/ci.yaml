@@ -72,3 +72,7 @@ jobs:
       - name: Build and Push Docker Images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Generate the first 8 characters of GITHUB_SHA
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-8)
+        
