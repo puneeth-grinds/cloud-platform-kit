@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "s3_storage" {
-  bucket = "cloud-platform-kit-app-${var.aws_account_id}"
+  bucket        = "cloud-platform-kit-app-${var.aws_account_id}"
+  force_destroy = true
   tags = {
     Name = "cloud-platform-kit-storage-bucket"
   }

@@ -1,6 +1,7 @@
 resource "aws_ecr_repository" "ecr_api_gateway" {
   name                 = "api-gateway"
   image_tag_mutability = "IMMUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -10,6 +11,7 @@ resource "aws_ecr_repository" "ecr_api_gateway" {
 resource "aws_ecr_repository" "ecr_vulnerability_scanner" {
   name                 = "vulnerability-scanner"
   image_tag_mutability = "IMMUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
