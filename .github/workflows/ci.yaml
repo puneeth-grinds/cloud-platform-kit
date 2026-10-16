@@ -45,4 +45,5 @@ jobs:
   build-and-push:
     needs: go-test-job
     runs-on: ubuntu-latest
-    if: 
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
