@@ -17,10 +17,11 @@ jobs:
       
       - name: Set up Go
         uses: actions/setup-go@v7
-        cache: true 
-        cache-dependecy-path:
-          services/api-gateway/go.sum
-          services/vulnerability-scanner/go.sum
+        with:
+          cache: true 
+          cache-dependecy-path:
+            services/api-gateway/go.sum
+            services/vulnerability-scanner/go.sum
 
 
       - name: Install dependencies
