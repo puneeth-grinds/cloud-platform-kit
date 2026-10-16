@@ -75,4 +75,12 @@ jobs:
         run: |
           # Generate the first 8 characters of GITHUB_SHA
           IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-8)
-        
+
+          # Build and push API Gateway
+          docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./services/api-gateway
+          docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
+
+
+          # Build and push Vulnerability Scanner
+          docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./services/api-gateway
+          docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
