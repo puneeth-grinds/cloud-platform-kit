@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-go@v7
         with:
           cache: true 
-          cache-dependecy-path:
+          cache-dependency-path:
             services/api-gateway/go.sum
             services/vulnerability-scanner/go.sum
 
