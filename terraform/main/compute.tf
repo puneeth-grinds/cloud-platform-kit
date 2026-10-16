@@ -122,6 +122,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.vulnerability_scanner_task.arn
+  
 
   container_definitions = jsonencode([
     {
@@ -163,7 +164,8 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
-      }
+      },
+
     }
   ])
 
@@ -175,7 +177,14 @@ resource "aws_ecs_service" "ecs_service_apigateway" {
   task_definition = aws_ecs_task_definition.ecs_task_apigateway.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
   depends_on      = [aws_lb_listener.lb_listener]
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
   network_configuration {
     subnets          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
     security_groups  = [aws_security_group.ecs_sg.id]
@@ -195,6 +204,13 @@ resource "aws_ecs_service" "ecs_service_vulscanner" {
   task_definition = aws_ecs_task_definition.ecs_task_vulscanner.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
   network_configuration {
     subnets          = [aws_subnet.private_1a.id, aws_subnet.private_1b.id]
     security_groups  = [aws_security_group.ecs_sg.id]
