@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "github-actions" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:puneeth-grinds/cloud-platform-kit:ref:refs/heads/main"]
+      values   = ["repo:puneeth-grinds@290420462/cloud-platform-kit@1351053488:ref:refs/heads/main"]
     }
   }
 }
