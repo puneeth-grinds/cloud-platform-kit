@@ -52,6 +52,7 @@ jobs:
       id-token: write
 
     outputs:
+      image_tag: ${{ steps.set-outputs.outputs.image_tag }}
       api_gateway_image_uri: ${{ steps.set-outputs.outputs.api_gateway_image_uri }}
       vulnerability_scanner_image_uri: ${{ steps.set-outputs.outputs.vulnerability_scanner_image_uri }}
 
@@ -96,6 +97,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-8)
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "api_gateway_image_uri=$ECR_REGISTRY/api-gateway:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "vulnerability_scanner_image_uri=$ECR_REGISTRY/vulnerability-scanner:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
@@ -143,6 +145,8 @@ jobs:
           task-definition: ecs/api-gateway-task-def.json
           container-name: api-gateway
           image: ${{ needs.build-and-push.outputs.api_gateway_image_uri }}
+          environment-variables: |
+            APP_VERSION=${{ needs.build-and-push.outputs.image_tag }}
 
       - name: Deploy api-gateway
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
