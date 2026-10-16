@@ -26,3 +26,8 @@ jobs:
       - name: Run API Gateway Tests
         working-dorectory: services/api-gateway
         run: go test -race -v ./...
+      
+      - name: Run API Gateway Vet Checks
+        working-directory: services/api-gateway
+        run: go vet ./...
+        
