@@ -84,3 +84,12 @@ jobs:
           # Build and push Vulnerability Scanner
           docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./services/api-gateway
           docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
+
+      - name: Set Image Outputs
+        id: set-outputs
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-8)
+          echo "api_gateway_image_uri=$ECR_REGISTRY/api-gateway:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "vulnerability_scanner_image_uri=$ECR_REGISTRY/vulnerability-scanner:$IMAGE_TAG" >> $GITHUB_OUTPUT
