@@ -10,3 +10,7 @@ permissions:
 jobs:
   go-test-job:
     runs-on: ubuntu-lateat
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
