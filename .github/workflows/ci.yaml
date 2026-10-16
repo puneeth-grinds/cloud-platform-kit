@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   go-test-job:
-    runs-on: ubuntu-lateat
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
