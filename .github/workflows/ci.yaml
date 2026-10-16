@@ -60,6 +60,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN  }}
           aws-region: ${{vars.AWS_REGION}}
+          allowed-account-ids: "512297269123"
       
       - name: Verify OIDC Connection
         run: aws sts get-caller-identity
