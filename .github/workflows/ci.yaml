@@ -6,7 +6,7 @@ on:
 
   pull_request:
     branches: [ main ]
-    
+
 permissions:
   contents: read
 
@@ -41,3 +41,8 @@ jobs:
       - name: Run Vulnerability Scanner Vet Checks
         working-directory: services/vulnerability-scanner
         run: go vet ./...
+    
+  build-and-push:
+    needs: go-test-job
+    runs-on: ubuntu-latest
+    if: 
