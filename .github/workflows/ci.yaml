@@ -51,17 +51,6 @@ jobs:
       contents: read
       id-token: write
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-          allowed-account-ids: "512297269123"
-      
     outputs:
       api_gateway_image_uri: ${{ steps.set-outputs.outputs.api_gateway_image_uri }}
       vulnerability_scanner_image_uri: ${{ steps.set-outputs.outputs.vulnerability_scanner_image_uri }}
@@ -118,3 +107,14 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          allowed-account-ids: "512297269123"
