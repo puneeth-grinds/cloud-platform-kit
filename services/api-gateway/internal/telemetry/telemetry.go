@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, error) {
@@ -37,11 +38,16 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		return nil, fmt.Errorf("failed to create otlp exporter %w", err)
 	}
 
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(traceExporter),
+		sdktrace.WithResource(res),
+	)
+
 	shutdown := func(shutdownCtx context.Context) error {
 		return nil
 	}
 
-	return shutdown, nil
+	return tp.Shutdown, nil
 }
 
 func parseHeaders(rawHeaders string) map[string]string {
