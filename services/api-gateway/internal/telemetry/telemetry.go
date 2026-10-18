@@ -1,0 +1,110 @@
+package telemetry
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
+)
+
+func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, error) {
+	if cfg.OTELExporterOTLPEndpoint == "" {
+		return func(ctx context.Context) error { return nil }, nil
+	}
+
+	res, err := resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceNameKey.String(cfg.ServiceName),
+			semconv.ServiceVersionKey.String(cfg.ServiceVersion),
+		),
+		resource.WithTelemetrySDK(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to created OTEL resource %w", err)
+	}
+
+	headersMap := parseHeaders(cfg.OTELExporterOTLPHeaders)
+
+	traceExporter, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
+		otlptracegrpc.WithHeaders(headersMap),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create otlp exporter %w", err)
+	}
+
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(traceExporter),
+		sdktrace.WithResource(res),
+	)
+
+	otel.SetTracerProvider(tp)
+
+	metricExporter, err := otlpmetricgrpc.New(
+		ctx,
+		otlpmetricgrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
+		otlpmetricgrpc.WithHeaders(headersMap),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create OLTP metric explorer: %w", err)
+
+	}
+
+	mp := sdkmetric.NewMeterProvider(
+		sdkmetric.WithResource(res),
+		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter)),
+	)
+
+	otel.SetMeterProvider(mp)
+
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
+	shutdown := func(shutdownCtx context.Context) error {
+		err := tp.Shutdown(shutdownCtx)
+		if metricErr := mp.Shutdown(shutdownCtx); metricErr != nil {
+			err = errors.Join(err, metricErr)
+		}
+		return err
+	}
+
+	return shutdown, nil
+
+}
+
+func parseHeaders(rawHeaders string) map[string]string {
+	headers := make(map[string]string)
+	if strings.TrimSpace(rawHeaders) == "" {
+		return headers
+	}
+
+	// First, split the entire configuration string by commas to get individual header strings
+	pairs := strings.Split(rawHeaders, ",")
+	for _, pair := range pairs {
+		pair = strings.TrimSpace(pair)
+		if pair == "" {
+			continue
+		}
+
+		// Use SplitN with 2 elements on each pair so tokens containing "=" remain uncorrupted [1]
+		parts := strings.SplitN(pair, "=", 2)
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			if key != "" {
+				headers[key] = value
+			}
+		}
+	}
+
+	return headers
+}

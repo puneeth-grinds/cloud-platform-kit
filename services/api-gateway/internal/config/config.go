@@ -19,6 +19,14 @@ type Config struct {
 	RateLimitRPM int
 	// Version identifies the deployed application revision.
 	Version string
+
+	OTELExporterOTLPEndpoint string `envconfig:"OTEL_EXPORTER_OTLP_ENDPOINT"`
+
+	OTELExporterOTLPHeaders string `envconfig:"OTEL_EXPORTER_OTLP_HEADERS"`
+
+	ServiceName string `envconfig:"SERVICE_NAME" default:"api-gateway"`
+
+	ServiceVersion string `envconfig:"SERVICE_VERSION" default:"0.1.0"`
 }
 
 // getEnv reads optional environment variables that have safe defaults.
@@ -48,12 +56,16 @@ func Load() (Config, error) {
 	// Optional values use safe defaults. Required values use os.Getenv and are
 	// validated below.
 	cfg := Config{
-		Port:         getEnv("PORT", "8080"),
-		LogLevel:     getEnv("LOG_LEVEL", "info"),
-		ScannerURL:   os.Getenv("SCANNER_URL"),
-		APIKey:       os.Getenv("API_KEY"),
-		RateLimitRPM: rateLimitRPMInt,
-		Version:      getEnv("APP_VERSION", "dev"),
+		Port:                     getEnv("PORT", "8080"),
+		LogLevel:                 getEnv("LOG_LEVEL", "info"),
+		ScannerURL:               os.Getenv("SCANNER_URL"),
+		APIKey:                   os.Getenv("API_KEY"),
+		RateLimitRPM:             rateLimitRPMInt,
+		Version:                  getEnv("APP_VERSION", "dev"),
+		OTELExporterOTLPEndpoint: os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
+		OTELExporterOTLPHeaders:  os.Getenv("OTEL_EXPORTER_OTLP_HEADERS"),
+		ServiceName:              getEnv("SERVICE_NAME", "api-gateway"),
+		ServiceVersion:           getEnv("SERVICE_VERSION", "0.1.0"),
 	}
 
 	if cfg.ScannerURL == "" {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/handler"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/telemetry"
 )
 
 func parseLogLevel(value string) slog.Level {
@@ -58,6 +60,16 @@ func main() {
 		"version", cfg.Version,
 	)
 	rateLimiter := middleware.NewRateLimiter(cfg.RateLimitRPM)
+	telemetryShutdown := func(context.Context) error { return nil }
+
+	if cfg.OTELExporterOTLPEndpoint == "" {
+		logger.Warn("telemetry is disabled: OTLP endpoint is not configured")
+	} else {
+		telemetryShutdown, err = telemetry.Init(ctx, cfg)
+		if err != nil {
+			log.Fatal("failed to initialize telemetry", err)
+		}
+	}
 
 	mux := http.NewServeMux()
 
@@ -108,4 +120,11 @@ func main() {
 	} else {
 		logger.Info("server shutdown complete")
 	}
+
+	if err := telemetryShutdown(shutdownCtx); err != nil {
+		logger.Error("telemetry shutdown failed", "error", err)
+	} else {
+		logger.Info("telemetry shutdown complete")
+	}
+
 }
