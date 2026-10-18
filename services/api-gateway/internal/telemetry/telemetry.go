@@ -2,6 +2,7 @@ package telemetry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -16,10 +17,14 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			semconv.ServiceNameKey.String(cfg.ServiceName),
-			semconv.ServiceNameKey.String(cfg.ServiceVersion)
-		)
+			semconv.ServiceNameKey.String(cfg.ServiceVersion),
+		),
+		resource.WithTelemetrySDK(),
 
 	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to created OTEL resource", err)
+	}
 
 	shutdown := func(shutdownCtx context.Context) error {
 		return nil
