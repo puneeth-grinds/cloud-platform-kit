@@ -43,9 +43,6 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdktrace.WithResource(res),
 	)
 
-	shutdown := func(shutdownCtx context.Context) error {
-		return nil
-	}
 
 	return tp.Shutdown, nil
 }
