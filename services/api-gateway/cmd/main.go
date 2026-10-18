@@ -61,9 +61,13 @@ func main() {
 	)
 	rateLimiter := middleware.NewRateLimiter(cfg.RateLimitRPM)
 
-	shutdown, err := telemetry.Init(ctx, cfg)
-	if err != nil {
-		log.Fatal(err)
+	if cfg.OTELExporterOTLPEndpoint == "" {
+		logger.Warn("Telementry is disabled: OLTP endpoint is not configured")
+	} else {
+		shutdown, err := telemetry.Init(ctx, cfg)
+		if err != nil {
+			log.Fatal("Failed to initialize telemetry","error",err)
+		}
 	}
 
 	mux := http.NewServeMux()
