@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -42,6 +43,7 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdktrace.WithBatcher(traceExporter),
 		sdktrace.WithResource(res),
 	)
+	otel.SetTracerProvider(tp)
 
 	return tp.Shutdown, nil
 }
