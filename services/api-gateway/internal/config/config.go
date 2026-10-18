@@ -20,9 +20,9 @@ type Config struct {
 	// Version identifies the deployed application revision.
 	Version string
 
-	OtelExporterOtlpEndpoint string `envconfig:"OTEL_EXPORTER_OTLP_ENDPOINT"`
+	OTELExporterOTLPEndpoint string `envconfig:"OTEL_EXPORTER_OTLP_ENDPOINT"`
 
-	OtelExporterOtlpHeaders string `envconfig:"OTEL_EXPORTER_OTLP_HEADERS"`
+	OTELExporterOTLPHeaders string `envconfig:"OTEL_EXPORTER_OTLP_HEADERS"`
 
 	ServiceName string `envconfig:"SERVICE_NAME" default:"api-gateway"`
 
