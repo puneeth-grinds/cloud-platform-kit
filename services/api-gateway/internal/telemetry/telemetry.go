@@ -8,8 +8,8 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
 )
 
 func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, error) {
@@ -42,7 +42,6 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdktrace.WithBatcher(traceExporter),
 		sdktrace.WithResource(res),
 	)
-
 
 	return tp.Shutdown, nil
 }
