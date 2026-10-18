@@ -66,7 +66,7 @@ func Load() (Config, error) {
 		OTELExporterOTLPEndpoint: os.Getenv("OTELEXPORTEROTLPENDPOINT"),
 		OTELExporterOTLPHeaders: os.Getenv("OTELEXPORTEROTLPHEADERS"),
 		ServiceName: getEnv("SERVICE_NAME","api-gateway"),
-		ServiceVersion: getEnv("SERVICE_VERSION","0.1.0")
+		ServiceVersion: getEnv("SERVICE_VERSION","0.1.0"),
 	}
 
 	if cfg.ScannerURL == "" {
