@@ -20,7 +20,6 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 			semconv.ServiceVersionKey.String(cfg.ServiceVersion),
 		),
 		resource.WithTelemetrySDK(),
-
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to created OTEL resource %w", err)
