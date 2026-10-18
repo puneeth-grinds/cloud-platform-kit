@@ -50,7 +50,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer shutdown(ctx)
+	
 
 	// Use JSON logs so ECS and CloudWatch receive structured fields.
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -116,4 +116,5 @@ func main() {
 	} else {
 		logger.Info("server shutdown complete")
 	}
+	defer shutdown(ctx)
 }
