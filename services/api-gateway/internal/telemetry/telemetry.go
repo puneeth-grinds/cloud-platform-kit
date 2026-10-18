@@ -25,9 +25,12 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to created OTEL resource %w", err)
 	}
+	
+	headersMap := parseHeaders(cfg.OTELExporterOTLPHeaders)
 
 	traceExporter, err := otlptracegrpc.New(ctx,
 		otlptracegrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
+		otlptracegrpc.WithHeaders(headersMap),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create otlp exporter %w", err)
@@ -38,4 +41,10 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	}
 
 	return shutdown, nil
+}
+
+func parseHeaders(rawHeaders string)map[string]string{
+	headers := make(map[string]string)
+	if strings.TrimSpace(rawHeaders) == "" {
+		return headers
 }
