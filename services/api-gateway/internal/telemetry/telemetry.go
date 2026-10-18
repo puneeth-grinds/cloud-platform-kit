@@ -27,7 +27,7 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	}
 
 	traceExporter, err := otlptracegrpc.New(ctx,
-		otlptracegrpc.WithEndpoint(cfg.OTELExporterOTLPEndpoint),
+		otlptracegrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create otlp exporter %w", err)
