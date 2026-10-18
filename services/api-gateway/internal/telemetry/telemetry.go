@@ -1,1 +1,1 @@
-package telementry
+package telemetry
