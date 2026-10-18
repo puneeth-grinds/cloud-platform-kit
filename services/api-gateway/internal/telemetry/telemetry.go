@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
 )
@@ -23,6 +24,13 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to created OTEL resource %w", err)
+	}
+
+	traceExporter, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpoint(cfg.OTELExporterOTLPEndpoint),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create otlp exporter %w", err)
 	}
 
 	shutdown := func(shutdownCtx context.Context) error {
