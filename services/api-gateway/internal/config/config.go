@@ -23,6 +23,9 @@ type Config struct {
 	OtelExporterOtlpEndpoint string `envconfig:"OTEL_EXPORTER_OTLP_ENDPOINT"`
 
 	OtelExporterOtlpHeaders string `envconfig:"OTEL_EXPORTER_OTLP_HEADERS"`
+
+	ServiceName string `envconfig:"SERVICE_NAME" default:"api-gateway"`
+
 }
 
 // getEnv reads optional environment variables that have safe defaults.
