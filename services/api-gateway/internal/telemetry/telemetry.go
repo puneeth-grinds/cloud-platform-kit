@@ -7,11 +7,13 @@ import (
 )
 
 func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, error) {
-	shutdown := func(shutdownCtx context.Context) error {
-		return nil
-	}
 	if cfg.OTELExporterOTLPEndpoint == "" {
 		return func(ctx context.Context) error { return nil }, nil
 	}
+
+	shutdown := func(shutdownCtx context.Context) error {
+		return nil
+	}
+
 	return shutdown, nil
 }
