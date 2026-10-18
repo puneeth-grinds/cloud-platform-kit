@@ -17,7 +17,7 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			semconv.ServiceNameKey.String(cfg.ServiceName),
-			semconv.ServiceNameKey.String(cfg.ServiceVersion),
+			semconv.ServiceVersionKey.String(cfg.ServiceVersion),
 		),
 		resource.WithTelemetrySDK(),
 
