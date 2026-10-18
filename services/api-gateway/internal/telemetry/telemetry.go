@@ -50,13 +50,22 @@ func parseHeaders(rawHeaders string) map[string]string {
 		return headers
 	}
 
-	// Using SplitN with 2 elements prevents tokens containing "=" from fragmenting.
-	parts := strings.SplitN(rawHeaders, "=", 2)
-	if len(parts) == 2 {
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-		if key != "" {
-			headers[key] = value
+	// First, split the entire configuration string by commas to get individual header strings
+	pairs := strings.Split(rawHeaders, ",")
+	for _, pair := range pairs {
+		pair = strings.TrimSpace(pair)
+		if pair == "" {
+			continue
+		}
+
+		// Use SplitN with 2 elements on each pair so tokens containing "=" remain uncorrupted [1]
+		parts := strings.SplitN(pair, "=", 2)
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			if key != "" {
+				headers[key] = value
+			}
 		}
 	}
 
