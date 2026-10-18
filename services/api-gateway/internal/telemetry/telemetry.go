@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 )
 
 func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, error) {
@@ -54,8 +55,15 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create OLTP metric explorer: %w", err)
-		
+
 	}
+
+	mp := sdkmetric.NewMeterProvider(
+		sdkmetric.WithResource(res),
+		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter)),
+	)
+
+	otel.SetMeterProvider(mp)
 
 	return tp.Shutdown, nil
 }
