@@ -43,6 +43,7 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdktrace.WithBatcher(traceExporter),
 		sdktrace.WithResource(res),
 	)
+	
 	otel.SetTracerProvider(tp)
 
 	return tp.Shutdown, nil
