@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/handler"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
+	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/telemetry"
 )
 
 func parseLogLevel(value string) slog.Level {
@@ -43,6 +45,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	shutdown, err := telemetry.Init(ctx, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer shutdown(ctx)
 
 	// Use JSON logs so ECS and CloudWatch receive structured fields.
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
