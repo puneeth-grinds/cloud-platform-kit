@@ -116,5 +116,10 @@ func main() {
 	} else {
 		logger.Info("server shutdown complete")
 	}
-	defer shutdown(ctx)
+
+	if err := shutdown(shutdownCtx); err != nil {
+		logger.Error("telemetry shutdown failed", "error", err)
+	} else {
+		logger.Info("telemetry shutdown complete")
+	}
 }
