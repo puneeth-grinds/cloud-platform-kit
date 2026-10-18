@@ -22,7 +22,7 @@ type Config struct {
 
 	OtelExporterOtlpEndpoint string `envconfig:"OTEL_EXPORTER_OTLP_ENDPOINT"`
 
-	OtelExporterOtlpHeaders SensitiveString `envconfig:"OTEL_EXPORTER_OTLP_HEADERS"`
+	OtelExporterOtlpHeaders string `envconfig:"OTEL_EXPORTER_OTLP_HEADERS"`
 }
 
 // getEnv reads optional environment variables that have safe defaults.
