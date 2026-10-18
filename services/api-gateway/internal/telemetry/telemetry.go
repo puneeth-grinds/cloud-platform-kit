@@ -7,6 +7,7 @@ import (
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -43,8 +44,18 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdktrace.WithBatcher(traceExporter),
 		sdktrace.WithResource(res),
 	)
-	
+
 	otel.SetTracerProvider(tp)
+
+	metricExporter, err := otlpmetricgrpc.New(
+		ctx,
+		otlpmetricgrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
+		otlpmetricgrpc.WithHeaders(headersMap),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create OLTP metric explorer: %w", err)
+		
+	}
 
 	return tp.Shutdown, nil
 }
