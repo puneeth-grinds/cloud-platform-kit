@@ -2,6 +2,7 @@ package telemetry
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -9,10 +10,10 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 )
 
 func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, error) {
@@ -63,7 +64,15 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter)),
 	)
 
-	otel.SetMeterProvider(mp)
+	shutdown := func(shutdownCtx context.Context) error {
+		err := tp.Shutdown(shutdownCtx)
+		if metricErr := mp.Shutdown(shutdownCtx); metricErr != nil {
+			err = errors.Join(err, metricErr)
+		}
+		return err
+	}
+
+	return shutdown, nil
 
 	return tp.Shutdown, nil
 }
