@@ -46,12 +46,6 @@ func main() {
 		panic(err)
 	}
 
-	shutdown, err := telemetry.Init(ctx, cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-	
-
 	// Use JSON logs so ECS and CloudWatch receive structured fields.
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: parseLogLevel(cfg.LogLevel),
