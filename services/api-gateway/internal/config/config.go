@@ -64,6 +64,8 @@ func Load() (Config, error) {
 		RateLimitRPM: rateLimitRPMInt,
 		Version:      getEnv("APP_VERSION", "dev"),
 		OtelExporterOtlpEndpoint: os.Getenv("OTELEXPORTEROTLPENDPOINT"),
+		OtelExporterOtlpHeaders: os.Getenv("OTELEXPORTEROTLPHEADERS"),
+		ServiceName: getEnv("SERVICE_NAME","api-gateway"),
 		
 	}
 
