@@ -47,4 +47,13 @@ func parseHeaders(rawHeaders string)map[string]string{
 	headers := make(map[string]string)
 	if strings.TrimSpace(rawHeaders) == "" {
 		return headers
+
+	parts := strings.SplitN(rawHeaders, "=", 2)
+	if len(parts) == 2 {
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		if key != "" {
+			headers[key] = value
+		}
+	}
 }
