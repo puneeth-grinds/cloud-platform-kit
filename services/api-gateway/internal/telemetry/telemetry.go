@@ -3,6 +3,7 @@ package telemetry
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -43,11 +44,13 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	return shutdown, nil
 }
 
-func parseHeaders(rawHeaders string)map[string]string{
+func parseHeaders(rawHeaders string) map[string]string {
 	headers := make(map[string]string)
 	if strings.TrimSpace(rawHeaders) == "" {
 		return headers
+	}
 
+	// Using SplitN with 2 elements prevents tokens containing "=" from fragmenting.
 	parts := strings.SplitN(rawHeaders, "=", 2)
 	if len(parts) == 2 {
 		key := strings.TrimSpace(parts[0])
@@ -56,4 +59,6 @@ func parseHeaders(rawHeaders string)map[string]string{
 			headers[key] = value
 		}
 	}
+
+	return headers
 }
