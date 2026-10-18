@@ -10,5 +10,8 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	shutdown := func(shutdownCtx context.Context) error {
 		return nil
 	}
+	if cfg.OTELExporterOTLPEndpoint == ""{
+		return func(ctx context.Context)error {return nil}, nil
+	}
 	return shutdown, nil
 }
