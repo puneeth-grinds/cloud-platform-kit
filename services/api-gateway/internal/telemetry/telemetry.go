@@ -26,7 +26,7 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to created OTEL resource %w", err)
 	}
-	
+
 	headersMap := parseHeaders(cfg.OTELExporterOTLPHeaders)
 
 	traceExporter, err := otlptracegrpc.New(ctx,
