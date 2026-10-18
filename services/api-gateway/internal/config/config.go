@@ -26,6 +26,8 @@ type Config struct {
 
 	ServiceName string `envconfig:"SERVICE_NAME" default:"api-gateway"`
 
+	ServiceVersion string `envconfig:"SERVICE_VERSION" default:"0.1.0"`
+
 }
 
 // getEnv reads optional environment variables that have safe defaults.
