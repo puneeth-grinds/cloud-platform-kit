@@ -63,6 +63,8 @@ func Load() (Config, error) {
 		APIKey:       os.Getenv("API_KEY"),
 		RateLimitRPM: rateLimitRPMInt,
 		Version:      getEnv("APP_VERSION", "dev"),
+		OtelExporterOtlpEndpoint: os.Getenv("OTELEXPORTEROTLPENDPOINT"),
+		
 	}
 
 	if cfg.ScannerURL == "" {
