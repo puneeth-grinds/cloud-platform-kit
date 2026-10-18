@@ -23,7 +23,7 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to created OTEL resource", err)
+		return nil, fmt.Errorf("failed to created OTEL resource %w", err)
 	}
 
 	shutdown := func(shutdownCtx context.Context) error {
