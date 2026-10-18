@@ -64,6 +64,8 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter)),
 	)
 
+	otel.SetMeterProvider(mp)
+
 	shutdown := func(shutdownCtx context.Context) error {
 		err := tp.Shutdown(shutdownCtx)
 		if metricErr := mp.Shutdown(shutdownCtx); metricErr != nil {
