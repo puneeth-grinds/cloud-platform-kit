@@ -61,6 +61,11 @@ func main() {
 	)
 	rateLimiter := middleware.NewRateLimiter(cfg.RateLimitRPM)
 
+		shutdown, err := telemetry.Init(ctx, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	mux := http.NewServeMux()
 
 	// Health is public because load balancers and local checks must be able to
