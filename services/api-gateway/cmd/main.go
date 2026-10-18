@@ -66,8 +66,9 @@ func main() {
 	} else {
 		shutdown, err := telemetry.Init(ctx, cfg)
 		if err != nil {
-			log.Fatal("Failed to initialize telemetry","error",err)
+			log.Fatal("Failed to initialize telemetry", "error", err)
 		}
+		defer shutdown(ctx)
 	}
 
 	mux := http.NewServeMux()
@@ -120,9 +121,4 @@ func main() {
 		logger.Info("server shutdown complete")
 	}
 
-	if err := shutdown(shutdownCtx); err != nil {
-		logger.Error("telemetry shutdown failed", "error", err)
-	} else {
-		logger.Info("telemetry shutdown complete")
-	}
 }
