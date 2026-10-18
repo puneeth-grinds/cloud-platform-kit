@@ -76,7 +76,6 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 
 	return shutdown, nil
 
-	return tp.Shutdown, nil
 }
 
 func parseHeaders(rawHeaders string) map[string]string {
