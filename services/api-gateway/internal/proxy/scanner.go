@@ -72,6 +72,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 
 	resp, err := p.client.Do(req)
 	if err != nil {
+		p.scannerErrorCount.Add(ctx, 1)
 		span.RecordError(err)
 		span.SetStatus(codes.Error, "scanner request failed")
 
