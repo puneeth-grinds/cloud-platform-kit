@@ -40,7 +40,6 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 	ctx, span := otel.Tracer("api-gateway/proxy").Start(ctx, "proxy.scan")
 	defer span.End()
 
-	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
 	start := time.Now()
 
 	targetURL := strings.TrimRight(p.baseURL, "/") + "/scan"
