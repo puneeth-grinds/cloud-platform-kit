@@ -81,7 +81,7 @@ func main() {
 	scannerProxy, err := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 	if err != nil {
 		logger.Error("failed to create scanner proxy", "error", err)
-		return
+		os.Exit(1)
 	}
 
 	// /scan flow: auth checks the API key, rate limit checks request volume,
