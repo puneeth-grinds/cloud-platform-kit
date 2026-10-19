@@ -41,6 +41,7 @@ func NewScannerProxy(scannerURL string, logger *slog.Logger) (*ScannerProxy, err
 		scannerErrorCount: scannerErrorCount,
 	}, nil
 }
+
 // Forward sends the caller's scan request body to the vulnerability-scanner and
 // returns the scanner's status code and response body.
 func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
