@@ -81,9 +81,6 @@ func (rl *RateLimiter) check(
 		remaining = 0
 	}
 
-	span := trace.SpanFromContext(r.Context())
-	span.SetAttributes(attribute.Int("rate_limit.remaining", remaining))
-
 	allowed = entry.Count <= rl.rate
 	if !allowed {
 		span.AddEvent("rate_limit.exceeded")
