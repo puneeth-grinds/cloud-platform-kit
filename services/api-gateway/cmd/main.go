@@ -89,7 +89,11 @@ func main() {
 
 	// Logging wraps the whole mux so every route gets one structured request log.
 	wrappedMux := otelhttp.NewHandler(
-
+		middleware.LoggingMiddleware(logger)(mux),
+		"api-gateway",
+		otelhttp.WithSpanNameFormatter(func(_ string, r *http.Request) string {
+			return r.Method + " " + r.Pattern
+		}),
 	)
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
