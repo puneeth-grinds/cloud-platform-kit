@@ -44,7 +44,7 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 				json.NewEncoder(w).Encode(apiError)
 				return
 			}
-
+			span.AddEvent("api_key.authentication_succeeded")
 			next.ServeHTTP(w, r)
 		})
 	}
