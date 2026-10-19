@@ -12,6 +12,7 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type ScannerProxy struct {
@@ -38,9 +39,12 @@ func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
 func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
 	ctx, span := otel.Tracer("api-gateway/proxy").Start(ctx, "proxy.scan")
 	defer span.End()
-	
+
 	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
 	start := time.Now()
+
+	targetURL := strings.TrimRight(p.baseURL, "/") + "/scan"
+	span.SetAttributes(attribute.String("scanner.url", targetURL))
 
 	// Reuse the caller's context so cancelled client requests also cancel the
 	// downstream scanner request.
