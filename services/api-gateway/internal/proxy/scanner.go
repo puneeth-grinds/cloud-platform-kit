@@ -13,6 +13,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/codes"
 )
 
 type ScannerProxy struct {
@@ -65,6 +66,9 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 
 	resp, err := p.client.Do(req)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "scanner request failed")
+
 		p.logger.ErrorContext(
 			ctx,
 			"scanner request failed",
