@@ -84,7 +84,6 @@ func (rl *RateLimiter) check(
 
 	allowed = entry.Count <= rl.rate
 	if !allowed {
-		span.AddEvent("rate_limit.exceeded")
 		retryAfter := entry.WindowStart.Add(rl.per).Sub(now).Seconds()
 		retryAfterSec = int(retryAfter)
 		if retryAfterSec < 1 {
