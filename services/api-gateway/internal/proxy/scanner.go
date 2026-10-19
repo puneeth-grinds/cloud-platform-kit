@@ -38,7 +38,7 @@ func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
 func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
 	ctx, span := otel.Tracer("api-gateway/proxy").Start(ctx, "proxy.scan")
 	defer span.End()
-	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+	
 	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
 	start := time.Now()
 
@@ -53,7 +53,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 	if err != nil {
 		return 0, nil, err
 	}
-
+	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
 	req.Header.Set("Content-Type", contentType)
 
 	resp, err := p.client.Do(req)
