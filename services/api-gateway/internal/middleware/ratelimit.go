@@ -6,9 +6,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"go.opentelemetry.io/otel/trace"
-	"google.golang.org/grpc/attributes"
 )
 
 type rateLimitingEntry struct {
@@ -36,6 +33,8 @@ func NewRateLimiter(rate int) *RateLimiter {
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-API-Key")
+
+
 
 		allowed, remaining := rl.check(apiKey, time.Now())
 		trace.SpanFromContext(r.Context()).SetAttributes(
