@@ -26,17 +26,21 @@ type ScannerProxy struct {
 
 // NewScannerProxy stores the scanner base URL and creates an HTTP client with a
 // timeout so api-gateway does not wait forever on the downstream service.
-func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
-	httpClient := http.Client{Timeout: 30 * time.Second}
-
-	proxy := ScannerProxy{
-		baseURL: scannerURL,
-		client:  &httpClient,
-		logger:  logger,
+func NewScannerProxy(scannerURL string, logger *slog.Logger) (*ScannerProxy, error) {
+	scannerErrorCount, err := otel.Meter("api-gateway/proxy").Int64Counter(
+		"api_gateway.proxy.scanner.error.count",
+	)
+	if err != nil {
+		return nil, err
 	}
-	return &proxy
-}
 
+	return &ScannerProxy{
+		baseURL:           scannerURL,
+		client:            &http.Client{Timeout: 30 * time.Second},
+		logger:            logger,
+		scannerErrorCount: scannerErrorCount,
+	}, nil
+}
 // Forward sends the caller's scan request body to the vulnerability-scanner and
 // returns the scanner's status code and response body.
 func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
