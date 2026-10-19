@@ -38,11 +38,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		span := trace.SpanFromContext(r.Context())
 		span.SetAttributes(attribute.Int("rate_limit.remaining", remaining))
 
-		trace.SpanFromContext(r.Context()).SetAttributes(
-			attribute.Int("rate_limit.remaining", remaining),
-		)
-
 		if !allowed {
+			span.AddEvent("rate_limit.exceeded")
+
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Retry-After", strconv.Itoa(retryAfterSec))
 			w.WriteHeader(http.StatusTooManyRequests)
