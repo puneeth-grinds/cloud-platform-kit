@@ -16,6 +16,7 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/telemetry"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func parseLogLevel(value string) slog.Level {
@@ -77,7 +78,11 @@ func main() {
 	// call it without an API key.
 	mux.HandleFunc("GET /health", handler.NewHealthHandler(cfg.Version))
 
-	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
+	scannerProxy, err := proxy.NewScannerProxy(cfg.ScannerURL, logger)
+	if err != nil {
+		logger.Error("failed to create scanner proxy", "error", err)
+		os.Exit(1)
+	}
 
 	// /scan flow: auth checks the API key, rate limit checks request volume,
 	// then the handler forwards the request to the vulnerability-scanner.
@@ -87,8 +92,13 @@ func main() {
 	mux.Handle("POST /scan", protectedScanHandler)
 
 	// Logging wraps the whole mux so every route gets one structured request log.
-	wrappedMux := middleware.LoggingMiddleware(logger)(mux)
-
+	wrappedMux := otelhttp.NewHandler(
+		middleware.LoggingMiddleware(logger)(mux),
+		"api-gateway",
+		otelhttp.WithSpanNameFormatter(func(_ string, r *http.Request) string {
+			return r.Method + " " + r.Pattern
+		}),
+	)
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      wrappedMux,

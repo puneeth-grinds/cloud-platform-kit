@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/json"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"net/http"
 )
 
@@ -25,7 +27,11 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 			inputHash := sha256.Sum256([]byte(apiKey))
 			match := subtle.ConstantTimeCompare(expectedHash[:], inputHash[:])
 
+			span := trace.SpanFromContext(r.Context())
+
 			if apiKey == "" || match != 1 {
+				span.SetAttributes(attribute.String("auth.result", "denied"))
+				span.AddEvent("auth.denied")
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
 
@@ -36,7 +42,7 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 				json.NewEncoder(w).Encode(apiError)
 				return
 			}
-
+			span.SetAttributes(attribute.String("auth.result", "allowed"))
 			next.ServeHTTP(w, r)
 		})
 	}
