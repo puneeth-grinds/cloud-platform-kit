@@ -35,6 +35,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		apiKey := r.Header.Get("X-API-Key")
 		allowed, remaining, retryAfterSec := rl.check(apiKey, time.Now())
 
+		span := trace.SpanFromContext(r.Context())
+		span.SetAttributes(attribute.Int("rate_limit.remaining", remaining))
+
 		trace.SpanFromContext(r.Context()).SetAttributes(
 			attribute.Int("rate_limit.remaining", remaining),
 		)
