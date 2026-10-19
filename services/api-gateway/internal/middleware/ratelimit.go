@@ -85,3 +85,19 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func (rl *RateLimiter) check(apiKey string, now time.Time)(allowed bool, remaining int){
+	entry := &rateLimitingEntry{Count: 1, WindowStart: now}
+	actual, loaded := rl.requests.LoadOrStore(apiKey, entry)
+	entry = actual.(*rateLimitingEntry)
+
+	if loaded{
+		if now.Sub(entry.WindowStart) >= rl.per{
+			entry.Count = 1,
+			entry.WindowStart = now
+		} else {
+			entry.Count++
+		}
+	}
+	
+}
