@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
-	"golang.org/x/tools/go/analysis/passes/defers"
 )
 
 type ScannerProxy struct {
