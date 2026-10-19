@@ -12,14 +12,16 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type ScannerProxy struct {
-	baseURL string
-	client  *http.Client
-	logger  *slog.Logger
+	baseURL           string
+	client            *http.Client
+	logger            *slog.Logger
+	scannerErrorCount metric.Int64Counter
 }
 
 // NewScannerProxy stores the scanner base URL and creates an HTTP client with a
