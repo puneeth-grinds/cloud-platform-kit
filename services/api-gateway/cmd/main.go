@@ -78,7 +78,11 @@ func main() {
 	// call it without an API key.
 	mux.HandleFunc("GET /health", handler.NewHealthHandler(cfg.Version))
 
-	scannerProxy := proxy.NewScannerProxy(cfg.ScannerURL, logger)
+	scannerProxy, err := proxy.NewScannerProxy(cfg.ScannerURL, logger)
+	if err != nil {
+		logger.Error("failed to create scanner proxy","error", err)
+		return
+	}
 
 	// /scan flow: auth checks the API key, rate limit checks request volume,
 	// then the handler forwards the request to the vulnerability-scanner.
