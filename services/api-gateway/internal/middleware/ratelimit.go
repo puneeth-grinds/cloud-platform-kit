@@ -99,5 +99,9 @@ func (rl *RateLimiter) check(apiKey string, now time.Time)(allowed bool, remaini
 			entry.Count++
 		}
 	}
-	
+	remaining = rl.rate - entry.Count
+	if remaining< 0 {
+		remaining = 0
+	}
+	return entry.Count <= rl.rate, remaining
 }
