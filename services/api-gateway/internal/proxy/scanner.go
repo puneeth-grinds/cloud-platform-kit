@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"go.opentelemetry.io/otel"
+	"golang.org/x/tools/go/analysis/passes/defers"
 )
 
 type ScannerProxy struct {
@@ -33,6 +36,8 @@ func NewScannerProxy(scannerURL string, logger *slog.Logger) *ScannerProxy {
 // Forward sends the caller's scan request body to the vulnerability-scanner and
 // returns the scanner's status code and response body.
 func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType string) (int, []byte, error) {
+	ctx, span := otel.Tracer("api-gateway/proxy").Start(ctx, "proxy.scan")
+	defer span.End()
 	trimmedBaseURL := strings.TrimRight(p.baseURL, "/")
 	start := time.Now()
 
