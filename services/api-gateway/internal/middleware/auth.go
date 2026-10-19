@@ -32,6 +32,8 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 			span.SetAttributes(attribute.Bool("auth.api_key.valid", apiKey != "" && match == 1))
 
 			if apiKey == "" || match != 1 {
+				span.AddEvent("api_key.authentication_failed")
+				
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
 
