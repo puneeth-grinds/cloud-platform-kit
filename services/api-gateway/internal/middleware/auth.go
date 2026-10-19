@@ -27,6 +27,9 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 			expectedHash := sha256.Sum256([]byte(APIKey))
 			inputHash := sha256.Sum256([]byte(apiKey))
 			match := subtle.ConstantTimeCompare(expectedHash[:], inputHash[:])
+			
+			span := trace.SpanFromContext(r.Context())
+			span.SetAttributes(attribute.Bool("auth.api_key.valid", apiKey != "" && match == 1))
 
 			if apiKey == "" || match != 1 {
 				w.Header().Set("Content-Type", "application/json")
