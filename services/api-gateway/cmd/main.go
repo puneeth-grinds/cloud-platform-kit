@@ -80,7 +80,7 @@ func main() {
 
 	scannerProxy, err := proxy.NewScannerProxy(cfg.ScannerURL, logger)
 	if err != nil {
-		logger.Error("failed to create scanner proxy","error", err)
+		logger.Error("failed to create scanner proxy", "error", err)
 		return
 	}
 
