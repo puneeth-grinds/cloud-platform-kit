@@ -16,6 +16,7 @@ import (
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/middleware"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/proxy"
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/telemetry"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func parseLogLevel(value string) slog.Level {
@@ -87,8 +88,9 @@ func main() {
 	mux.Handle("POST /scan", protectedScanHandler)
 
 	// Logging wraps the whole mux so every route gets one structured request log.
-	wrappedMux := middleware.LoggingMiddleware(logger)(mux)
+	wrappedMux := otelhttp.NewHandler(
 
+	)
 	server := http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      wrappedMux,
