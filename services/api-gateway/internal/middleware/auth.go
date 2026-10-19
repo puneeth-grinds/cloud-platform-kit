@@ -31,6 +31,7 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 			span := trace.SpanFromContext(r.Context())
 
 			if apiKey == "" || match != 1 {
+				span.SetAttributes(attribute.String("auth.result", "denied"))
 				span.AddEvent("api_key.authentication_failed")
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
@@ -42,7 +43,7 @@ func APIKeyMiddleware(APIKey string) func(next http.Handler) http.Handler {
 				json.NewEncoder(w).Encode(apiError)
 				return
 			}
-			span.AddEvent("api_key.authentication_succeeded")
+			span.SetAttributes(attribute.String("auth.result", "allowed"))
 			next.ServeHTTP(w, r)
 		})
 	}
