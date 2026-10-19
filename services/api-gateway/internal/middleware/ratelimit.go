@@ -6,6 +6,9 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type rateLimitingEntry struct {
@@ -20,7 +23,6 @@ type RateLimiter struct {
 	per      time.Duration
 }
 
-// NewRateLimiter creates a fixed-window limiter using requests per minute.
 func NewRateLimiter(rate int) *RateLimiter {
 	return &RateLimiter{
 		rate: rate,
@@ -28,51 +30,65 @@ func NewRateLimiter(rate int) *RateLimiter {
 	}
 }
 
-// Middleware tracks request counts per API key and returns 429 when the key has
-// used all requests in the current one-minute window.
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-API-Key")
+		allowed, remaining, retryAfterSec := rl.check(apiKey, time.Now())
 
-
-
-		allowed, remaining := rl.check(apiKey, time.Now())
 		trace.SpanFromContext(r.Context()).SetAttributes(
-			attributes.Int("rate_limit.remaining", remaining),
+			attribute.Int("rate_limit.remaining", remaining),
 		)
 
-			w.Header().Set("Retry-After", strconv.Itoa(int(retryAfterSec)))
+		if !allowed {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Retry-After", strconv.Itoa(retryAfterSec))
 			w.WriteHeader(http.StatusTooManyRequests)
 
 			apiError := APIError{
 				Error: "Too Many Requests",
 				Code:  http.StatusTooManyRequests,
 			}
-			json.NewEncoder(w).Encode(apiError)
+			_ = json.NewEncoder(w).Encode(apiError)
 			return
 		}
 
-		entry.mu.Unlock()
 		next.ServeHTTP(w, r)
 	})
 }
 
-func (rl *RateLimiter) check(apiKey string, now time.Time)(allowed bool, remaining int){
+func (rl *RateLimiter) check(
+	apiKey string,
+	now time.Time,
+) (allowed bool, remaining int, retryAfterSec int) {
 	entry := &rateLimitingEntry{Count: 1, WindowStart: now}
 	actual, loaded := rl.requests.LoadOrStore(apiKey, entry)
 	entry = actual.(*rateLimitingEntry)
 
-	if loaded{
-		if now.Sub(entry.WindowStart) >= rl.per{
+	entry.mu.Lock()
+	defer entry.mu.Unlock()
+
+	if loaded {
+		if now.Sub(entry.WindowStart) >= rl.per {
 			entry.Count = 1
 			entry.WindowStart = now
 		} else {
 			entry.Count++
 		}
 	}
+
 	remaining = rl.rate - entry.Count
-	if remaining< 0 {
+	if remaining < 0 {
 		remaining = 0
 	}
-	return entry.Count <= rl.rate, remaining
+
+	allowed = entry.Count <= rl.rate
+	if !allowed {
+		retryAfter := entry.WindowStart.Add(rl.per).Sub(now).Seconds()
+		retryAfterSec = int(retryAfter)
+		if retryAfterSec < 1 {
+			retryAfterSec = 1
+		}
+	}
+
+	return allowed, remaining, retryAfterSec
 }
