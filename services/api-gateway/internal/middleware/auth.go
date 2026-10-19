@@ -4,6 +4,9 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/json"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"net/http"
 )
 
