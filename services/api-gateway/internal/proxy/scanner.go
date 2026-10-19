@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type ScannerProxy struct {
@@ -51,13 +51,17 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		trimmedBaseURL+"/scan",
+		targetURL,
 		body,
 	)
 	if err != nil {
 		return 0, nil, err
 	}
 	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
+	if req.ContentLength >= 0 {
+		span.SetAttributes(attribute.Int64("http.request.body.size", req.ContentLength))
+	}
 	req.Header.Set("Content-Type", contentType)
 
 	resp, err := p.client.Do(req)
