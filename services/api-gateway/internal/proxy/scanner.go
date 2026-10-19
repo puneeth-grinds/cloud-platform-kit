@@ -71,6 +71,7 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 			"error", err,
 			"duration", time.Since(start),
 		)
+		span.SetAttributes(attribute.Int("http.response.status_code", resp.StatusCode))
 		if errors.Is(err, context.DeadlineExceeded) {
 			return 0, nil, context.DeadlineExceeded
 		}
