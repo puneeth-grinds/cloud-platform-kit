@@ -105,6 +105,9 @@ func (p *ScannerProxy) Forward(ctx context.Context, body io.Reader, contentType 
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "failed to read scanner response body")
+		p.scannerErrorCount.Add(ctx, 1)
 		return 0, nil, err
 	}
 
