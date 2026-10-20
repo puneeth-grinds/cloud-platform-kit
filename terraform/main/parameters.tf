@@ -20,3 +20,14 @@ resource "aws_ssm_parameter" "grafana_otlp_endpoint" {
   }
 }
 
+resource "aws_ssm_parameter" "grafana_otlp_headers" {
+  name        = "/cloud-platform-kit/grafana/otlp-headers"
+  description = "Stores the Grafana Cloud OTLP authorization header"
+  type        = "SecureString"
+  value       = var.grafana_otlp_headers
+
+  tags = {
+    Component = "observability"
+  }
+}
+
