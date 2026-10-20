@@ -103,7 +103,7 @@ func main() {
 		Addr:         ":" + cfg.Port,
 		Handler:      wrappedMux,
 		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 45 * time.Second,
+		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
 
