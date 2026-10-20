@@ -36,7 +36,7 @@ func NewScannerProxy(scannerURL string, logger *slog.Logger) (*ScannerProxy, err
 
 	return &ScannerProxy{
 		baseURL:           scannerURL,
-		client:            &http.Client{Timeout: 30 * time.Second},
+		client:            &http.Client{Timeout: 45 * time.Second},
 		logger:            logger,
 		scannerErrorCount: scannerErrorCount,
 	}, nil
