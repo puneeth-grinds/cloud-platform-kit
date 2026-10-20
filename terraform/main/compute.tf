@@ -89,6 +89,14 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
         {
           name      = "API_KEY"
           valueFrom = aws_ssm_parameter.api_gateway_api_key_ssm.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_ENDPOINT"
+          valueFrom = aws_ssm_parameter.grafana_otlp_endpoint.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_HEADERS"
+          valueFrom = aws_ssm_parameter.grafana_otlp_headers.arn
         }
       ]
       environment = [
@@ -140,6 +148,14 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
         {
           name      = "DATABASE_URL"
           valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_ENDPOINT"
+          valueFrom = aws_ssm_parameter.grafana_otlp_endpoint.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_HEADERS"
+          valueFrom = aws_ssm_parameter.grafana_otlp_headers.arn
         }
       ]
       environment = [
