@@ -23,3 +23,6 @@ api_gateway_api_key             = "ReplaceWithSecureAPIKey"
 api_gateway_image_uri           = "<account-id>.dkr.ecr.us-west-1.amazonaws.com/api-gateway:<commit-sha>"
 vulnerability_scanner_image_uri = "<account-id>.dkr.ecr.us-west-1.amazonaws.com/vulnerability-scanner:<commit-sha>"
 
+# Grafana Cloud OpenTelemetry configuration
+grafana_otlp_endpoint = "https://otlp-gateway-<region>.grafana.net/otlp"
+grafana_otlp_headers  = "Authorization=Basic <base64-instance-id-and-token>"

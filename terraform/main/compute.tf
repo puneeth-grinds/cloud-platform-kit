@@ -89,6 +89,14 @@ resource "aws_ecs_task_definition" "ecs_task_apigateway" {
         {
           name      = "API_KEY"
           valueFrom = aws_ssm_parameter.api_gateway_api_key_ssm.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_ENDPOINT"
+          valueFrom = aws_ssm_parameter.grafana_otlp_endpoint.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_HEADERS"
+          valueFrom = aws_ssm_parameter.grafana_otlp_headers.arn
         }
       ]
       environment = [
@@ -122,7 +130,7 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.vulnerability_scanner_task.arn
-  
+
 
   container_definitions = jsonencode([
     {
@@ -140,6 +148,14 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
         {
           name      = "DATABASE_URL"
           valueFrom = aws_ssm_parameter.rds_db_connection_string.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_ENDPOINT"
+          valueFrom = aws_ssm_parameter.grafana_otlp_endpoint.arn
+        },
+        {
+          name      = "OTEL_EXPORTER_OTLP_HEADERS"
+          valueFrom = aws_ssm_parameter.grafana_otlp_headers.arn
         }
       ]
       environment = [
@@ -172,14 +188,14 @@ resource "aws_ecs_task_definition" "ecs_task_vulscanner" {
 }
 
 resource "aws_ecs_service" "ecs_service_apigateway" {
-  name            = "api-gateway"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.ecs_task_apigateway.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                               = "api-gateway"
+  cluster                            = aws_ecs_cluster.ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.ecs_task_apigateway.arn
+  desired_count                      = 1
+  launch_type                        = "FARGATE"
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
-  depends_on      = [aws_lb_listener.lb_listener]
+  depends_on                         = [aws_lb_listener.lb_listener]
 
   lifecycle {
     ignore_changes = [task_definition]
@@ -199,11 +215,11 @@ resource "aws_ecs_service" "ecs_service_apigateway" {
 }
 
 resource "aws_ecs_service" "ecs_service_vulscanner" {
-  name            = "vulnerability-scanner"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.ecs_task_vulscanner.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                               = "vulnerability-scanner"
+  cluster                            = aws_ecs_cluster.ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.ecs_task_vulscanner.arn
+  desired_count                      = 1
+  launch_type                        = "FARGATE"
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
 
