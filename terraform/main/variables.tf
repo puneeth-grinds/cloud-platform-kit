@@ -89,3 +89,15 @@ variable "api_gateway_api_key" {
   description = "API Gateway API key"
   sensitive   = true
 }
+
+variable "grafana_otlp_endpoint" {
+  type        = string
+  description = "Grafana Cloud OTLP HTTP endpoint"
+  sensitive   = true
+}
+
+variable "grafana_otlp_headers" {
+  type        = string
+  description = "Grafana Cloud OTLP authorization header"
+  sensitive   = true
+}
