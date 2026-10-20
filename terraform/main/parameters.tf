@@ -8,3 +8,15 @@ resource "aws_ssm_parameter" "api_gateway_api_key_ssm" {
     Component = "api-gateway"
   }
 }
+
+resource "aws_ssm_parameter" "grafana_otlp_endpoint" {
+  name        = "/cloud-platform-kit/grafana/otlp-endpoint"
+  description = "Stores the Grafana Cloud OTLP endpoint"
+  type        = "SecureString"
+  value       = var.grafana_otlp_endpoint
+
+  tags = {
+    Component = "observability"
+  }
+}
+
