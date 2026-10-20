@@ -8,8 +8,8 @@ import (
 
 	"github.com/puneeth-grinds/cloud-platform-kit/services/api-gateway/internal/config"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -35,9 +35,9 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 
 	headersMap := parseHeaders(cfg.OTELExporterOTLPHeaders)
 
-	traceExporter, err := otlptracegrpc.New(ctx,
-		otlptracegrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
-		otlptracegrpc.WithHeaders(headersMap),
+	traceExporter, err := otlptracehttp.New(ctx,
+		otlptracehttp.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
+		otlptracehttp.WithHeaders(headersMap),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create otlp exporter %w", err)
@@ -50,10 +50,10 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 
 	otel.SetTracerProvider(tp)
 
-	metricExporter, err := otlpmetricgrpc.New(
+	metricExporter, err := otlpmetrichttp.New(
 		ctx,
-		otlpmetricgrpc.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
-		otlpmetricgrpc.WithHeaders(headersMap),
+		otlpmetrichttp.WithEndpointURL(cfg.OTELExporterOTLPEndpoint),
+		otlpmetrichttp.WithHeaders(headersMap),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create OLTP metric explorer: %w", err)
