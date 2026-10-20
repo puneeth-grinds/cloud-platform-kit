@@ -34,10 +34,8 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 	}
 
 	headersMap := parseHeaders(cfg.OTELExporterOTLPHeaders)
-	baseEndpoint := strings.TrimRight(cfg.OTELExporterOTLPEndpoint, "/")
 
 	traceExporter, err := otlptracehttp.New(ctx,
-		otlptracehttp.WithEndpointURL(baseEndpoint+"/v1/traces"),
 		otlptracehttp.WithHeaders(headersMap),
 	)
 	if err != nil {
@@ -53,7 +51,6 @@ func Init(ctx context.Context, cfg config.Config) (func(context.Context) error, 
 
 	metricExporter, err := otlpmetrichttp.New(
 		ctx,
-		otlpmetrichttp.WithEndpointURL(baseEndpoint+"/v1/metrics"),
 		otlpmetrichttp.WithHeaders(headersMap),
 	)
 	if err != nil {
